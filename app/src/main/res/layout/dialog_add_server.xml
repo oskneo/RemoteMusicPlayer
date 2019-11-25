@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:gravity="center_horizontal"
+		android:layout_margin="@dimen/default_margin">
+	
+	<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="@dimen/default_margin"
+			android:text="Please input server info"/>
+	
+	<include
+			layout="@layout/view_edit_text"
+	        android:id="@+id/server_name"/>
+	
+	<include
+			layout="@layout/view_edit_text"
+			android:id="@+id/server_address"/>
+	
+	<include
+			layout="@layout/view_edit_text"
+			android:id="@+id/server_username"/>
+	
+	<include
+			layout="@layout/view_edit_text"
+			android:id="@+id/server_pass"/>
+
+
+</LinearLayout>

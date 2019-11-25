@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		xmlns:tools="http://schemas.android.com/tools"
+		android:layout_margin="@dimen/default_margin">
+	
+	<TextView
+			android:id="@+id/server_name"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			tools:text="Name: aaaaaa"/>
+	
+	<TextView
+			android:id="@+id/server_addres"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/default_margin"
+			app:layout_constraintTop_toBottomOf="@+id/server_name"
+			app:layout_constraintStart_toStartOf="parent"
+			tools:text="Address:ddddddddd"/>
+	
+	<TextView
+			android:id="@+id/server_status"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/default_margin"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			tools:text="Address:ddddddddd"/>
+	
+	
+
+</android.support.constraint.ConstraintLayout>
