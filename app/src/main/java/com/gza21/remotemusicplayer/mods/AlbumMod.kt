@@ -7,13 +7,19 @@ import android.os.Parcelable
 data class AlbumMod(
     var mName: String?,
     var mArtist: ArrayList<ArtistMod>?,
-    var mMusics: Array<Int>?,
+    var mMusics: ArrayList<Int>,
     var mPhoto: Bitmap?
 ) : Parcelable {
+    constructor(mName: String?) : this(
+        mName,
+        arrayListOf(),
+        arrayListOf(),
+        null
+    )
     constructor(source: Parcel) : this(
         source.readString(),
         source.createTypedArrayList(ArtistMod.CREATOR),
-        source.createIntArray()?.toTypedArray(),
+        ArrayList<Int>().apply { source.readList(this, Int::class.java.classLoader) },
         source.readParcelable<Bitmap>(Bitmap::class.java.classLoader)
     )
 
@@ -22,7 +28,7 @@ data class AlbumMod(
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeString(mName)
         writeTypedList(mArtist)
-        writeIntArray(mMusics?.toIntArray())
+        writeList(mMusics)
         writeParcelable(mPhoto, 0)
     }
 

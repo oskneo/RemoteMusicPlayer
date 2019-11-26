@@ -1,5 +1,6 @@
 package com.gza21.remotemusicplayer.managers
 
+import com.gza21.remotemusicplayer.mods.DataBaseMod
 import com.gza21.remotemusicplayer.mods.ServerMod
 import com.hierynomus.msfscc.FileAttributes
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation
@@ -121,9 +122,11 @@ class NetworkManager {
         }
     }
 
-    fun getCurrentFolderList(): ArrayList<String> {
+    fun getCurrentFolderList(destDir: String = mDstDir,
+                             items: ArrayList<FileIdBothDirectoryInformation>? = getCurrentItems(destDir)
+    ): ArrayList<String> {
         val folders = arrayListOf<String>()
-        getCurrentItems()?.let {
+        items?.let {
             for (f in it) {
                 if (EnumWithValue.EnumUtils.isSet(f.getFileAttributes(), FileAttributes.FILE_ATTRIBUTE_DIRECTORY)) {
                     folders.add(f.fileName)
@@ -133,21 +136,23 @@ class NetworkManager {
         return folders
     }
 
-    fun getCurrentFileList(): ArrayList<String> {
-        val folders = arrayListOf<String>()
-        getCurrentItems()?.let {
+    fun getCurrentFileList(destDir: String = mDstDir,
+                           items: ArrayList<FileIdBothDirectoryInformation>? = getCurrentItems(destDir)
+    ): ArrayList<FileIdBothDirectoryInformation> {
+        val files = arrayListOf<FileIdBothDirectoryInformation>()
+        items?.let {
             for (f in it) {
                 if (!EnumWithValue.EnumUtils.isSet(f.getFileAttributes(), FileAttributes.FILE_ATTRIBUTE_DIRECTORY)) {
-                    folders.add(f.fileName)
+                    files.add(f)
                 }
             }
         }
-        return folders
+        return files
     }
 
-    fun getCurrentItems(): ArrayList<FileIdBothDirectoryInformation>? {
+    fun getCurrentItems(destDir: String = mDstDir): ArrayList<FileIdBothDirectoryInformation>? {
         val folders = arrayListOf<FileIdBothDirectoryInformation>()
-        mShare?.list(mDstDir)?.let {
+        mShare?.list(destDir)?.let {
             folders.addAll(it)
             return folders
         } ?: run { return null }
@@ -155,6 +160,26 @@ class NetworkManager {
 
     fun resetParams() {
         mDstDir = ""
+    }
+
+    fun selectFolder() {
+        val db = DataBaseMod(mServer)
+        scanFolder(db, mDstDir)
+    }
+
+    fun scanFolder(database: DataBaseMod, path: String) {
+
+        val items = getCurrentItems(path)
+        for (folder in getCurrentFolderList(path, items)) {
+            scanFolder(database, path + folder + "\\")
+        }
+
+        for (file in getCurrentFileList(path, items)) {
+
+            file
+
+        }
+
     }
 
 }

@@ -5,12 +5,13 @@ import android.os.Parcelable
 
 data class DataBaseMod(
     var mServer: ServerMod?,
-    var mMusics: ArrayList<MusicMod>?,
-    var mAlbums: ArrayList<AlbumMod>?,
-    var mArtists: ArrayList<ArtistMod>?,
-    var mPlaylists: ArrayList<PlaylistMod>?,
-    var mGenres: ArrayList<GenreMod>?
+    var mMusics: ArrayList<MusicMod>,
+    var mAlbums: ArrayList<AlbumMod>,
+    var mArtists: ArrayList<ArtistMod>,
+    var mPlaylists: ArrayList<PlaylistMod>,
+    var mGenres: ArrayList<GenreMod>
 ) : Parcelable {
+
     constructor(source: Parcel) : this(
         source.readParcelable<ServerMod>(ServerMod::class.java.classLoader),
         source.createTypedArrayList(MusicMod.CREATOR),
@@ -18,6 +19,15 @@ data class DataBaseMod(
         source.createTypedArrayList(ArtistMod.CREATOR),
         source.createTypedArrayList(PlaylistMod.CREATOR),
         source.createTypedArrayList(GenreMod.CREATOR)
+    )
+
+    constructor(mServer: ServerMod?) : this(
+        mServer,
+        arrayListOf(),
+        arrayListOf(),
+        arrayListOf(),
+        arrayListOf(),
+        arrayListOf()
     )
 
     override fun describeContents() = 0
@@ -37,5 +47,30 @@ data class DataBaseMod(
             override fun createFromParcel(source: Parcel): DataBaseMod = DataBaseMod(source)
             override fun newArray(size: Int): Array<DataBaseMod?> = arrayOfNulls(size)
         }
+    }
+
+    fun addMusic(music: MusicMod) {
+
+        val albumName = music.mAlbumName
+        val album = mAlbums.find {
+            it.mName == albumName
+        } ?: run {
+            val ab = AlbumMod(albumName)
+            mAlbums.add(ab)
+            ab
+        }
+        album.mMusics.add(mMusics.size)
+
+        for (artistName in music.mArtistNames) {
+            mArtists.find {
+                it.mName == artistName
+            }?.let {
+                
+            } ?: run {
+                val artist = ArtistMod(artistName)
+                mArtists.add(artist)
+            }
+        }
+        mMusics.add(music)
     }
 }
