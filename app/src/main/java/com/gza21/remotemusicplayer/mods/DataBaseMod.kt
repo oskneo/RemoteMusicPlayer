@@ -65,10 +65,18 @@ data class DataBaseMod(
             mArtists.find {
                 it.mName == artistName
             }?.let {
-                
+
+                it.mMusics.add(mMusics.size)
+                it.mAlbums.find {
+                    mAlbums.get(it).mName == albumName
+                } ?: run {
+                    it.mAlbums.add(mAlbums.indexOf(album))
+                }
             } ?: run {
                 val artist = ArtistMod(artistName)
                 mArtists.add(artist)
+                artist.mMusics.add(mMusics.size)
+                artist.mAlbums.add(mAlbums.indexOf(album))
             }
         }
         mMusics.add(music)
