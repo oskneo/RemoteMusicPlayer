@@ -17,7 +17,36 @@ class ServerManager {
         mServers.add(server)
     }
 
-    fun remove(server: ServerMod) {
-        mServers.remove(server)
+    fun remove(server: ServerMod?) {
+        server?.let {
+            mServers.remove(it)
+        }
+    }
+
+    fun edit(oldServer: ServerMod, newServer: ServerMod) {
+        mServers.find {
+            it == oldServer
+        }?.let {
+            it.mName = newServer.mName
+            it.mAddress = newServer.mAddress
+            it.mUserName = newServer.mUserName
+            it.mPassword = newServer.mPassword
+        }
+    }
+
+    fun resetDisConnected() {
+        for (server in mServers) {
+            if (server.mIsConnected == true)
+                server.mIsConnected = false
+        }
+    }
+
+    fun setServerConnected(server: ServerMod?) {
+        mServers.find {
+            it == server
+        }?.let {
+            resetDisConnected()
+            it.mIsConnected = true
+        }
     }
 }

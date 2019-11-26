@@ -7,14 +7,17 @@ data class ServerMod(
     var mName: String?,
     var mAddress: String?,
     var mUserName: String?,
-    var mPassword: String?
+    var mPassword: String?,
+    var mDomain: String = "",
+    var mIsConnected: Boolean = false
 ) : Parcelable {
-
     constructor(source: Parcel) : this(
         source.readString(),
         source.readString(),
         source.readString(),
-        source.readString()
+        source.readString(),
+        source.readString(),
+        1 == source.readInt()
     )
 
     override fun describeContents() = 0
@@ -24,6 +27,8 @@ data class ServerMod(
         writeString(mAddress)
         writeString(mUserName)
         writeString(mPassword)
+        writeString(mDomain)
+        writeInt((if (mIsConnected) 1 else 0))
     }
 
     companion object {

@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class DataBaseMod(
+    var mServer: ServerMod?,
     var mMusics: ArrayList<MusicMod>?,
     var mAlbums: ArrayList<AlbumMod>?,
     var mArtists: ArrayList<ArtistMod>?,
@@ -11,6 +12,7 @@ data class DataBaseMod(
     var mGenres: ArrayList<GenreMod>?
 ) : Parcelable {
     constructor(source: Parcel) : this(
+        source.readParcelable<ServerMod>(ServerMod::class.java.classLoader),
         source.createTypedArrayList(MusicMod.CREATOR),
         source.createTypedArrayList(AlbumMod.CREATOR),
         source.createTypedArrayList(ArtistMod.CREATOR),
@@ -21,6 +23,7 @@ data class DataBaseMod(
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
+        writeParcelable(mServer, 0)
         writeTypedList(mMusics)
         writeTypedList(mAlbums)
         writeTypedList(mArtists)

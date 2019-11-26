@@ -44,7 +44,7 @@ class ServerAdapter(val context: Context, val listener: ServerListener) : BaseAd
         val server = getItem(position)
         view.findViewById<TextView>(R.id.server_name)?.text = server.mName
         view.findViewById<TextView>(R.id.server_address)?.text = server.mAddress
-        view.findViewById<TextView>(R.id.server_status)?.text = "Not connected"
+        view.findViewById<TextView>(R.id.server_status)?.setText(if (server.mIsConnected) R.string.connected else R.string.not_connected)
 
         view.setOnClickListener {
             listener.onConnect(server)

@@ -2,7 +2,9 @@ package com.gza21.remotemusicplayer.activities
 
 import android.support.v7.app.AlertDialog
 import android.os.Bundle
+import android.support.annotation.IdRes
 import android.support.annotation.LayoutRes
+import android.support.annotation.StringRes
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -15,10 +17,12 @@ import com.gza21.remotemusicplayer.adapters.ServerAdapter
 import com.gza21.remotemusicplayer.dialogs.ServerConnectDialogFragment
 import com.gza21.remotemusicplayer.managers.ServerManager
 import com.gza21.remotemusicplayer.mods.ServerMod
+import com.gza21.remotemusicplayer.utils.Helper
 
 class NetworkActivity : BaseActivity() {
 
     var mAdapter: ServerAdapter? = null
+    val mSvMgr = ServerManager.instance
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +40,6 @@ class NetworkActivity : BaseActivity() {
         val listView = findViewById<ListView>(R.id.server_list)
         mAdapter = ServerAdapter(this, object : ServerAdapter.ServerListener {
             override fun onConnect(server: ServerMod) {
-
                 openServerDialog(server)
             }
         })
@@ -68,28 +71,43 @@ class NetworkActivity : BaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun getEditedContent(view: View?, id: Int) : String {
+    private fun getEditedContent(view: View?, @IdRes id: Int) : String {
         return view?.findViewById<LinearLayout>(id)?.
             findViewById<EditText>(R.id.edit_text)?.text?.toString() ?: ""
     }
 
-    private fun add() {
-        if (mAlertDialog?.isShowing == true) {
-            mAlertDialog?.dismiss()
+    private fun setEditedContent(view: View?, @IdRes id: Int, text: String?) {
+        text?.let {
+            view?.findViewById<LinearLayout>(id)?.
+                findViewById<EditText>(R.id.edit_text)?.setText(it)
         }
-        val dialogView = layoutInflater.inflate(R.layout.dialog_add_server, null)
-        mAlertDialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setPositiveButton("Ok", { dialog, which ->
-                ServerManager.instance.add(ServerMod(
-                        getEditedContent(dialogView, R.id.server_name),
-                        getEditedContent(dialogView, R.id.server_address),
-                        getEditedContent(dialogView, R.id.server_username),
-                        getEditedContent(dialogView, R.id.server_pass)
-                ))
-                dialog.dismiss()
-                updateList()
-            }).create()
+    }
 
+    fun getServerDialog(server: ServerMod?) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_server, null)
+        server?.let {
+            setEditedContent(dialogView, R.id.server_name, it.mName)
+            setEditedContent(dialogView, R.id.server_address, it.mAddress)
+            setEditedContent(dialogView, R.id.server_username, it.mUserName)
+            setEditedContent(dialogView, R.id.server_pass, it.mPassword)
+        }
+        mAlertDialog = Helper.getAlertDialog(this, mAlertDialog, dialogView, R.string.ok, {
+            val mServer = ServerMod(
+                getEditedContent(dialogView, R.id.server_name),
+                getEditedContent(dialogView, R.id.server_address),
+                getEditedContent(dialogView, R.id.server_username),
+                getEditedContent(dialogView, R.id.server_pass)
+            )
+            server?.let {
+                mSvMgr.edit(server, mServer)
+            } ?: run {
+                mSvMgr.add(mServer)
+            }
+            updateList()
+        })
+    }
+
+    private fun add() {
+        getServerDialog(null)
     }
 }

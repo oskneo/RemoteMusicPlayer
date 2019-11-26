@@ -7,13 +7,17 @@ data class MusicMod(
     var mFileName: String?,
     var mPath: String?,
     var mSize: Long?,
-    var mTitle: String?
+    var mTitle: String?,
+    var mCodec: String?,
+    var mType: String?
 ) : Parcelable {
     constructor(source: Parcel) : this(
-    source.readString(),
-    source.readString(),
-    source.readValue(Long::class.java.classLoader) as Long?,
-    source.readString()
+        source.readString(),
+        source.readString(),
+        source.readValue(Long::class.java.classLoader) as Long?,
+        source.readString(),
+        source.readString(),
+        source.readString()
     )
 
     override fun describeContents() = 0
@@ -23,6 +27,8 @@ data class MusicMod(
         writeString(mPath)
         writeValue(mSize)
         writeString(mTitle)
+        writeString(mCodec)
+        writeString(mType)
     }
 
     companion object {

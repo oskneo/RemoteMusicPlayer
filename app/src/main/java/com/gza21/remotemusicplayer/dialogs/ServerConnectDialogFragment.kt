@@ -55,12 +55,23 @@ class ServerConnectDialogFragment : DialogFragment() {
             it.findViewById<Button>(R.id.btn_connect)?.setOnClickListener {
                 delete()
             }
+            it.findViewById<Button>(R.id.btn_edit)?.setOnClickListener {
+                edit()
+            }
         }
     }
 
     private fun connect() {
 
-        mNwMgr.connect()
+        mServer?.let {
+            mNwMgr.setServer(it)
+            mNwMgr.connect()
+            (activity as NetworkActivity).updateList()
+        }
+
+
+
+
 
         val config = SmbConfig.builder().withTimeout(120, TimeUnit.SECONDS)
             .withTimeout(120, TimeUnit.SECONDS) // 超时设置读，写和Transact超时（默认为60秒）
@@ -80,7 +91,7 @@ class ServerConnectDialogFragment : DialogFragment() {
             val dstRoot: String = "要保存的本地文件夹路径"	// 如: D:/smd2/
 
             for ( f in share.list(SHARE_DST_DIR, "*.mp4")) {
-                val filePath = folder + f.fi
+                val filePath = folder + f.fileName
                 val dstPath = dstRoot + f.getFileName()
 
                 val fos = FileOutputStream(dstPath)
@@ -113,7 +124,7 @@ class ServerConnectDialogFragment : DialogFragment() {
         } catch (e: Exception) {
             e.printStackTrace();
         } finally {
-            client?.close()
+            client.close()
         }
         dismiss()
     }
@@ -124,12 +135,17 @@ class ServerConnectDialogFragment : DialogFragment() {
     }
 
     private fun delete() {
-        val p = Serializable.
-        p.ma
         disconnect()
-        ServerManager.instance.mServers.remove(mServer)
+        ServerManager.instance.remove(mServer)
         if (activity is NetworkActivity) {
             (activity as NetworkActivity?)?.updateList()
         }
+    }
+
+    private fun edit() {
+        if (activity is NetworkActivity) {
+            (activity as NetworkActivity?)?.getServerDialog(mServer)
+        }
+        dismiss()
     }
 }
