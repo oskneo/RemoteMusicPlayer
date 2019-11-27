@@ -52,33 +52,49 @@ data class DataBaseMod(
     fun addMusic(music: MusicMod) {
 
         val albumName = music.mAlbumName
-        val album = mAlbums.find {
-            it.mName == albumName
-        } ?: run {
-            val ab = AlbumMod(albumName)
-            mAlbums.add(ab)
-            ab
+        var album: AlbumMod? = null
+        for (ab in mAlbums) {
+            if (ab.mName == albumName) {
+                album = ab
+                break
+            }
+        }
+        if (album == null) {
+            album = AlbumMod(albumName)
+            album.mIndex = mAlbums.size
+            mAlbums.add(album)
         }
         album.mMusics.add(mMusics.size)
 
-        for (artistName in music.mArtistNames) {
-            mArtists.find {
-                it.mName == artistName
-            }?.let {
 
-                it.mMusics.add(mMusics.size)
-                it.mAlbums.find {
-                    mAlbums.get(it).mName == albumName
-                } ?: run {
-                    it.mAlbums.add(mAlbums.indexOf(album))
+
+        for (artistName in music.mArtistNames) {
+            var artist: ArtistMod? = null
+            for (at in mArtists) {
+                if (at.mName == artistName) {
+                    artist = at
+                    break
                 }
-            } ?: run {
-                val artist = ArtistMod(artistName)
+            }
+            if (artist == null) {
+                artist = ArtistMod(artistName)
+                artist.mIndex = mArtists.size
                 mArtists.add(artist)
-                artist.mMusics.add(mMusics.size)
-                artist.mAlbums.add(mAlbums.indexOf(album))
+            }
+
+            artist.mMusics.add(mMusics.size)
+            artist.mAlbums.find {
+                mAlbums.get(it).mName == albumName
+            } ?: run {
+                artist.mAlbums.add(album.mIndex)
+            }
+            album.mArtist.find {
+                it == artist.mIndex
+            } ?: run {
+                album.mArtist.add(artist.mIndex)
             }
         }
+        music.mIndexInModList = mMusics.size
         mMusics.add(music)
     }
 }

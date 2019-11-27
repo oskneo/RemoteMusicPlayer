@@ -69,10 +69,6 @@ class ServerConnectDialogFragment : DialogFragment() {
             (activity as NetworkActivity).updateList()
         }
 
-
-
-
-
         val config = SmbConfig.builder().withTimeout(120, TimeUnit.SECONDS)
             .withTimeout(120, TimeUnit.SECONDS) // 超时设置读，写和Transact超时（默认为60秒）
             .withSoTimeout(180, TimeUnit.SECONDS) // Socket超时（默认为0秒）

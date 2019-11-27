@@ -6,18 +6,15 @@ import android.os.Parcelable
 
 data class ArtistMod(
     var mName: String?,
-    var mAlbums: ArrayList<Int>?,
-    var mMusics: ArrayList<Int>?
+    var mAlbums: ArrayList<Int> = arrayListOf(),
+    var mMusics: ArrayList<Int> = arrayListOf(),
+    var mIndex: Int = -1
 ) : Parcelable {
-    constructor(mName: String?) : this(
-        mName,
-        arrayListOf(),
-        arrayListOf()
-    )
     constructor(source: Parcel) : this(
         source.readString(),
         ArrayList<Int>().apply { source.readList(this, Int::class.java.classLoader) },
-        ArrayList<Int>().apply { source.readList(this, Int::class.java.classLoader) }
+        ArrayList<Int>().apply { source.readList(this, Int::class.java.classLoader) },
+        source.readInt()
     )
 
     override fun describeContents() = 0
@@ -26,6 +23,7 @@ data class ArtistMod(
         writeString(mName)
         writeList(mAlbums)
         writeList(mMusics)
+        writeInt(mIndex)
     }
 
     companion object {

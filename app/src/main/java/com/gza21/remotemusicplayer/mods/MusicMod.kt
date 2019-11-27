@@ -5,18 +5,19 @@ import android.os.Parcelable
 
 data class MusicMod(
     var mFileName: String?,
-    var mPath: String?,
-    var mSize: Long?,
-    var mTitle: String?,
-    var mCodec: String?,
-    var mType: String?,
+    var mPath: String? = null,
+    var mSize: Long? = null,
+    var mTitle: String? = null,
+    var mCodec: String? = null,
+    var mType: String? = null,
     var mIndexInCache: Int = -1,
-    var mAlbumName: String?,
+    var mAlbumName: String? = null,
     var mAlbumIndex: Int = -1,
-    var mArtistNames: ArrayList<String>,
-    var mArtistInduces: Array<Int>,
-    var mPlaylists: Array<Int>,
-    var mGenres: Array<Int>
+    var mArtistNames: ArrayList<String> = arrayListOf(),
+    var mArtistInduces: Array<Int> = arrayOf(),
+    var mPlaylists: Array<Int> = arrayOf(),
+    var mGenres: Array<Int> = arrayOf(),
+    var mIndexInModList: Int = -1
 
 ) : Parcelable {
     constructor(source: Parcel) : this(
@@ -32,7 +33,8 @@ data class MusicMod(
         source.createStringArrayList(),
         source.createIntArray().toTypedArray(),
         source.createIntArray().toTypedArray(),
-        source.createIntArray().toTypedArray()
+        source.createIntArray().toTypedArray(),
+        source.readInt()
     )
 
     override fun describeContents() = 0
@@ -51,6 +53,7 @@ data class MusicMod(
         writeIntArray(mArtistInduces.toIntArray())
         writeIntArray(mPlaylists.toIntArray())
         writeIntArray(mGenres.toIntArray())
+        writeInt(mIndexInModList)
     }
 
     companion object {

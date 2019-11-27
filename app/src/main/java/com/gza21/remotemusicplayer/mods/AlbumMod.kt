@@ -6,30 +6,27 @@ import android.os.Parcelable
 
 data class AlbumMod(
     var mName: String?,
-    var mArtist: ArrayList<ArtistMod>?,
-    var mMusics: ArrayList<Int>,
-    var mPhoto: Bitmap?
+    var mArtist: ArrayList<Int> = arrayListOf(),
+    var mMusics: ArrayList<Int> = arrayListOf(),
+    var mPhoto: Bitmap? = null,
+    var mIndex: Int = -1
 ) : Parcelable {
-    constructor(mName: String?) : this(
-        mName,
-        arrayListOf(),
-        arrayListOf(),
-        null
-    )
     constructor(source: Parcel) : this(
         source.readString(),
-        source.createTypedArrayList(ArtistMod.CREATOR),
         ArrayList<Int>().apply { source.readList(this, Int::class.java.classLoader) },
-        source.readParcelable<Bitmap>(Bitmap::class.java.classLoader)
+        ArrayList<Int>().apply { source.readList(this, Int::class.java.classLoader) },
+        source.readParcelable<Bitmap>(Bitmap::class.java.classLoader),
+        source.readInt()
     )
 
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeString(mName)
-        writeTypedList(mArtist)
+        writeList(mArtist)
         writeList(mMusics)
         writeParcelable(mPhoto, 0)
+        writeInt(mIndex)
     }
 
     companion object {
