@@ -37,7 +37,7 @@ class RemoteMusicActivity : BaseActivity() {
     }
 
     override fun getLayoutView(): Int {
-        return R.layout.activity_add_remote_server
+        return R.layout.activity_remote_musics
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

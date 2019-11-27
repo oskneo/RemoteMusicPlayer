@@ -5,8 +5,8 @@ import android.os.Parcelable
 
 data class GenreMod(
     var mName: String?,
-    var mMusics: ArrayList<Int>? = arrayListOf(),
-    var mAlbums: ArrayList<Int>? = arrayListOf(),
+    var mMusics: ArrayList<Int> = arrayListOf(),
+    var mAlbums: ArrayList<Int> = arrayListOf(),
     var mIndex: Int = -1
 ) : Parcelable {
     constructor(source: Parcel) : this(

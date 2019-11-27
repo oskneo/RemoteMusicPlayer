@@ -83,6 +83,10 @@ class NetworkActivity : BaseActivity() {
         }
     }
 
+    /**
+     * If server is not null, it it edit dialog.
+     * If server is null, it is add dialog.
+     */
     fun getServerDialog(server: ServerMod?) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_server, null)
         server?.let {

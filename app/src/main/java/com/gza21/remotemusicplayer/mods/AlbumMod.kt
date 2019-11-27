@@ -3,20 +3,24 @@ package com.gza21.remotemusicplayer.mods
 import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
+import java.lang.ref.WeakReference
 
 data class AlbumMod(
     var mName: String?,
     var mArtist: ArrayList<Int> = arrayListOf(),
     var mMusics: ArrayList<Int> = arrayListOf(),
-    var mPhoto: Bitmap? = null,
-    var mIndex: Int = -1
+    var mIndex: Int = -1,
+    var mPhotoPath: String? = null
 ) : Parcelable {
+
+    var mPhotoIndexInCache: WeakReference<Bitmap>? = null
+
     constructor(source: Parcel) : this(
         source.readString(),
         ArrayList<Int>().apply { source.readList(this, Int::class.java.classLoader) },
         ArrayList<Int>().apply { source.readList(this, Int::class.java.classLoader) },
-        source.readParcelable<Bitmap>(Bitmap::class.java.classLoader),
-        source.readInt()
+        source.readInt(),
+        source.readString()
     )
 
     override fun describeContents() = 0
@@ -25,8 +29,8 @@ data class AlbumMod(
         writeString(mName)
         writeList(mArtist)
         writeList(mMusics)
-        writeParcelable(mPhoto, 0)
         writeInt(mIndex)
+        writeString(mPhotoPath)
     }
 
     companion object {

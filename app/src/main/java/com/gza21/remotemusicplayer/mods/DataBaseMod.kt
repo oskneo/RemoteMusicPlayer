@@ -65,6 +65,24 @@ data class DataBaseMod(
             mAlbums.add(album)
         }
         album.mMusics.add(mMusics.size)
+        music.mAlbumIndex = album.mIndex
+
+
+        val genreName = music.mGenre
+        var genre: GenreMod? = null
+        for (gr in mGenres) {
+            if (gr.mName == genreName) {
+                genre = gr
+                break
+            }
+        }
+        if (genre == null) {
+            genre = GenreMod(genreName)
+            genre.mIndex = mGenres.size
+            mGenres.add(genre)
+        }
+        genre.mMusics.add(mMusics.size)
+        music.mAlbumIndex = genre.mIndex
 
 
 
@@ -93,6 +111,7 @@ data class DataBaseMod(
             } ?: run {
                 album.mArtist.add(artist.mIndex)
             }
+            music.mArtistInduces.add(artist.mIndex)
         }
         music.mIndexInModList = mMusics.size
         mMusics.add(music)
