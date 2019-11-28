@@ -2,11 +2,11 @@ package com.gza21.remotemusicplayer.dialogs
 
 import android.os.Bundle
 import android.os.Parcel
-import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.fragment.app.DialogFragment
 import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.activities.NetworkActivity
 import com.gza21.remotemusicplayer.managers.NetworkManager

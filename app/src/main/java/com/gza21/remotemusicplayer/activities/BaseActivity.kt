@@ -1,12 +1,11 @@
 package com.gza21.remotemusicplayer.activities
 
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import com.gza21.remotemusicplayer.R
 
 open class BaseActivity : AppCompatActivity() {

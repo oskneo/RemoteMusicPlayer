@@ -1,7 +1,6 @@
 package com.gza21.remotemusicplayer.activities
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -25,6 +24,7 @@ class RemoteMusicActivity : BaseActivity() {
     }
 
     private fun getList() {
+
         val listView = findViewById<ListView>(R.id.music_list)
         mAdapter = MusicAdapter(this, object : MusicAdapter.MusicListener {
             override fun onDetail(music: MusicMod) {
@@ -56,13 +56,13 @@ class RemoteMusicActivity : BaseActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.findItem(R.id.action_add)?.setTitle("Add")
+        menu?.findItem(R.id.action_search)?.setTitle("Search")
         return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (item?.itemId ?: 0 == R.id.action_add) {
-            add()
+            search()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -70,6 +70,10 @@ class RemoteMusicActivity : BaseActivity() {
     fun getEditedContent(view: View?, id: Int) : String {
         return view?.findViewById<LinearLayout>(id)?.
             findViewById<EditText>(R.id.edit_text)?.text?.toString() ?: ""
+    }
+
+    fun search() {
+
     }
 
 }

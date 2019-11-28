@@ -1,14 +1,14 @@
 package com.gza21.remotemusicplayer.fragments
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.*
+import androidx.fragment.app.Fragment
 import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.adapters.FolderAdapter
 import com.gza21.remotemusicplayer.managers.NetworkManager
 import com.gza21.remotemusicplayer.utils.AppConstants
 
-class FolderSelectFragment :Fragment() {
+class FolderSelectFragment : Fragment() {
 
     var mContentView: View? = null
     var mAdapter: FolderAdapter? = null

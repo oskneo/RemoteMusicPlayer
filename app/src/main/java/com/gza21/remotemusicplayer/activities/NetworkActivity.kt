@@ -1,10 +1,6 @@
 package com.gza21.remotemusicplayer.activities
 
-import android.support.v7.app.AlertDialog
 import android.os.Bundle
-import android.support.annotation.IdRes
-import android.support.annotation.LayoutRes
-import android.support.annotation.StringRes
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -12,6 +8,10 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
+import androidx.annotation.IdRes
+import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.adapters.ServerAdapter
 import com.gza21.remotemusicplayer.dialogs.ServerConnectDialogFragment
