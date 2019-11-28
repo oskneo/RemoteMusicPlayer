@@ -8,30 +8,32 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.managers.FolderManager
+import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.managers.ServerManager
+import com.gza21.remotemusicplayer.mods.MusicMod
 import com.gza21.remotemusicplayer.mods.ServerMod
 
 class MusicAdapter(val context: Context, val listener: MusicListener) : BaseAdapter() {
 
-    private val mFdMgr = FolderManager.instance
-    var mFolders: ArrayList<String> = arrayListOf()
+    private val mMsMgr = MusicDBManager.instance
+    var mMusics: ArrayList<MusicMod> = arrayListOf()
 
     init {
-        mFolders.clear()
+        mMusics.clear()
     }
 
-    fun updateFolders() {
-        mFolders.clear()
-        mFolders.addAll(mFdMgr.getFolders())
+    fun updateMusics() {
+        mMusics.clear()
+        mMusics.addAll(mMsMgr.getMusicList())
         notifyDataSetChanged()
     }
 
     override fun getCount(): Int {
-        return mFolders.size
+        return mMusics.size
     }
 
-    override fun getItem(position: Int): String {
-        return mFolders.get(position)
+    override fun getItem(position: Int): MusicMod {
+        return mMusics.get(position)
     }
 
     override fun getItemId(position: Int): Long {
@@ -51,6 +53,8 @@ class MusicAdapter(val context: Context, val listener: MusicListener) : BaseAdap
     }
 
     interface MusicListener {
-        fun onSelect(folder: String)
+        fun onPlay(music: MusicMod)
+        fun onMenu(music: MusicMod)
+        fun onDetail(music: MusicMod)
     }
 }

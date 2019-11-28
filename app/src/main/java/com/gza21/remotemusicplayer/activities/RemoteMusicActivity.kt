@@ -9,12 +9,14 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
 import com.gza21.remotemusicplayer.R
+import com.gza21.remotemusicplayer.adapters.MusicAdapter
 import com.gza21.remotemusicplayer.adapters.ServerAdapter
+import com.gza21.remotemusicplayer.mods.MusicMod
 import com.gza21.remotemusicplayer.mods.ServerMod
 
 class RemoteMusicActivity : BaseActivity() {
 
-    var mAdapter: ServerAdapter? = null
+    var mAdapter: MusicAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,9 +25,17 @@ class RemoteMusicActivity : BaseActivity() {
     }
 
     private fun getList() {
-        val listView = findViewById<ListView>(R.id.server_list)
-        mAdapter = ServerAdapter(this, object : ServerAdapter.ServerListener {
-            override fun onConnect(server: ServerMod) {
+        val listView = findViewById<ListView>(R.id.music_list)
+        mAdapter = MusicAdapter(this, object : MusicAdapter.MusicListener {
+            override fun onDetail(music: MusicMod) {
+
+            }
+
+            override fun onMenu(music: MusicMod) {
+
+            }
+
+            override fun onPlay(music: MusicMod) {
 
             }
         })
@@ -33,7 +43,7 @@ class RemoteMusicActivity : BaseActivity() {
     }
 
     fun updateList() {
-        mAdapter?.updateServers()
+        mAdapter?.updateMusics()
     }
 
     override fun getLayoutView(): Int {
