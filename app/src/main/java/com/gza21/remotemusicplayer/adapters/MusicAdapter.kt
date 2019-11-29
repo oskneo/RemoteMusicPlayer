@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.ImageView
 import android.widget.TextView
 import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.managers.FolderManager
@@ -12,15 +13,12 @@ import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.managers.ServerManager
 import com.gza21.remotemusicplayer.mods.MusicMod
 import com.gza21.remotemusicplayer.mods.ServerMod
+import java.lang.StringBuilder
 
 class MusicAdapter(val context: Context, val listener: MusicListener) : BaseAdapter() {
 
     private val mMsMgr = MusicDBManager.instance
     var mMusics: ArrayList<MusicMod> = arrayListOf()
-
-    init {
-        mMusics.clear()
-    }
 
     fun updateMusics() {
         mMusics.clear()
@@ -41,15 +39,30 @@ class MusicAdapter(val context: Context, val listener: MusicListener) : BaseAdap
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-
-        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val view = inflater.inflate(R.layout.view_folder_item, null)
-        val folderName = getItem(position)
-        view.findViewById<TextView>(R.id.folder_item)?.text = folderName
-        view.setOnClickListener {
-            listener.onSelect(folderName)
+        var view = convertView
+        if (view == null) {
+            val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            view = inflater.inflate(R.layout.view_music_item, null)
         }
-        return view
+        val music = getItem(position)
+        view?.findViewById<ImageView>(R.id.thumb_nail)
+        view?.findViewById<TextView>(R.id.music_title)?.text = music.mTitle
+        var artists = StringBuilder()
+        artists.append("")
+        for (artist in music.mArtistNames) {
+            if (artists.length > 0) {
+                artists.append(", ")
+            }
+            artists.append(artist)
+        }
+        view?.findViewById<TextView>(R.id.music_artist)?.text = artists
+        view?.findViewById<ImageView>(R.id.music_menu)?.setOnClickListener {
+            listener.onMenu(music)
+        }
+        view?.setOnClickListener {
+            listener.onPlay(music)
+        }
+        return view!!
     }
 
     interface MusicListener {

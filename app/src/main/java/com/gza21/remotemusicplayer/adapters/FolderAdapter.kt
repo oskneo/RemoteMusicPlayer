@@ -40,14 +40,17 @@ class FolderAdapter(val context: Context, val listener: FolderListener) : BaseAd
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
 
-        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val view = inflater.inflate(R.layout.view_folder_item, null)
+        var view = convertView
+        if (view == null) {
+            val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            view = inflater.inflate(R.layout.view_folder_item, null)
+        }
         val folderName = getItem(position)
-        view.findViewById<TextView>(R.id.folder_item)?.text = folderName
-        view.setOnClickListener {
+        view?.findViewById<TextView>(R.id.folder_item)?.text = folderName
+        view?.setOnClickListener {
             listener.onSelect(folderName)
         }
-        return view
+        return view!!
     }
 
     interface FolderListener {

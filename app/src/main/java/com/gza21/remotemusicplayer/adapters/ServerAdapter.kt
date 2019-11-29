@@ -39,14 +39,17 @@ class ServerAdapter(val context: Context, val listener: ServerListener) : BaseAd
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
 
-        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val view = inflater.inflate(R.layout.view_server_item, null)
+        var view = convertView ?: run {
+            val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            inflater.inflate(R.layout.view_server_item, null)
+        }
+
         val server = getItem(position)
         view.findViewById<TextView>(R.id.server_name)?.text = server.mName
         view.findViewById<TextView>(R.id.server_address)?.text = server.mAddress
         view.findViewById<TextView>(R.id.server_status)?.setText(if (server.mIsConnected) R.string.connected else R.string.not_connected)
 
-        view.setOnClickListener {
+        view?.setOnClickListener {
             listener.onConnect(server)
         }
         return view
