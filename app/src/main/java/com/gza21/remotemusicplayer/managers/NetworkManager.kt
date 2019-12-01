@@ -1,9 +1,12 @@
 package com.gza21.remotemusicplayer.managers
 
 import com.gza21.remotemusicplayer.mods.DataBaseMod
+import com.gza21.remotemusicplayer.mods.MusicMod
 import com.gza21.remotemusicplayer.mods.ServerMod
+import com.hierynomus.msdtyp.AccessMask
 import com.hierynomus.msfscc.FileAttributes
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation
+import com.hierynomus.mssmb2.SMB2ShareAccess
 import com.hierynomus.protocol.commons.EnumWithValue
 import com.hierynomus.smbj.SMBClient
 import com.hierynomus.smbj.SmbConfig
@@ -12,7 +15,10 @@ import com.hierynomus.smbj.connection.Connection
 import com.hierynomus.smbj.session.Session
 import com.hierynomus.smbj.share.DiskShare
 import java.lang.Exception
+import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 class NetworkManager {
 
@@ -38,6 +44,8 @@ class NetworkManager {
     private var mServer: ServerMod? = null
     private var mIsConnected = false
     private var mThread: Thread? = null
+
+    private val mDbMgr = MusicDBManager.instance
 
 
 
@@ -165,6 +173,7 @@ class NetworkManager {
     fun selectFolder() {
         val db = DataBaseMod(mServer)
         scanFolder(db, mDstDir)
+        mDbMgr.setDb(db)
     }
 
     fun scanFolder(database: DataBaseMod, path: String) {
@@ -176,7 +185,15 @@ class NetworkManager {
 
         for (file in getCurrentFileList(path, items)) {
 
-            file
+            val s = HashSet<SMB2ShareAccess>()
+            s.add(SMB2ShareAccess.ALL.iterator().next())
+            val f = mShare?.openFile(path + file.fileName, EnumSet.of(AccessMask.GENERIC_READ), null, s, null, null)
+            val size = file.allocationSize
+            val music = MusicMod(file.fileName)
+            f?.let {
+                music.loadMusicFile(it, path + file.fileName, size.toInt())
+            }
+
 
         }
 

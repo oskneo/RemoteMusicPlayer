@@ -2,11 +2,12 @@ package com.gza21.remotemusicplayer.mods
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.hierynomus.smbj.share.File
 import ealvatag.audio.AudioFile
 import ealvatag.audio.AudioFileIO
 import ealvatag.tag.FieldKey
 import ealvatag.tag.NullTag
-import java.io.File
+import java.io.FileOutputStream
 
 data class MusicMod(
     var mFileName: String?,
@@ -87,14 +88,20 @@ data class MusicMod(
         }
     }
 
-    fun loadMusicFile(file: File, path: String) {
-        val audioFile = AudioFileIO.read(file)
+    fun loadMusicFile(file: File, path: String, size: Int) {
+
+        val f = java.io.File(file.fileId.toString())
+        val buffer = ByteArray(size)
+        file.read(buffer, 0)
+        val os = FileOutputStream(f)
+        os.write(buffer, 0, size)
+        val audioFile = AudioFileIO.read(f)
         val header = audioFile.audioHeader
 
         mChannelNumber = header.channelCount
         mBitrate = header.bitRate
         mCodec = header.encodingType
-        mSize = file.length()
+        mSize = size.toLong()
         mPath = path
 
         val tag = audioFile.tag.or(NullTag.INSTANCE)

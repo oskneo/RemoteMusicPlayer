@@ -57,7 +57,7 @@ class FolderSelectFragment : Fragment() {
     }
 
     private fun selectFolder() {
-
+        mNwMgr.selectFolder()
     }
 
 }

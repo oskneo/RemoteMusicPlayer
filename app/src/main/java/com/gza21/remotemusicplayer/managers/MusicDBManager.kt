@@ -26,6 +26,9 @@ class MusicDBManager {
         return mDataBase?.mArtists ?: arrayListOf()
     }
 
+    fun setDb(db: DataBaseMod) {
+        mDataBase = db
+    }
     fun loadDb(serverMod: ServerMod) {
 
         val path = serverMod.mDbPath

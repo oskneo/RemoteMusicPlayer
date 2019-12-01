@@ -4,14 +4,17 @@ import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
 import java.lang.ref.WeakReference
+import java.text.Collator
+import java.util.*
+import kotlin.collections.ArrayList
 
 data class AlbumMod(
-    var mName: String?,
+    var mName: String = "",
     var mArtist: ArrayList<Int> = arrayListOf(),
     var mMusics: ArrayList<Int> = arrayListOf(),
     var mIndex: Int = -1,
     var mPhotoPath: String? = null
-) : Parcelable {
+) : Parcelable, Comparable<AlbumMod> {
 
     var mPhotoIndexInCache: WeakReference<Bitmap>? = null
 
@@ -31,6 +34,11 @@ data class AlbumMod(
         writeList(mMusics)
         writeInt(mIndex)
         writeString(mPhotoPath)
+    }
+
+    override fun compareTo(other: AlbumMod): Int {
+        val cl = Collator.getInstance(Locale.JAPANESE)
+        return cl.compare(this.mName, other.mName)
     }
 
     companion object {
