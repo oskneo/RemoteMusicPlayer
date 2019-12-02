@@ -51,7 +51,7 @@ data class DataBaseMod(
 
     fun addMusic(music: MusicMod) {
 
-        val albumName = music.mAlbumName
+        val albumName = music.mAlbumName ?: ""
         var album: AlbumMod? = null
         for (ab in mAlbums) {
             if (ab.mName == albumName) {

@@ -18,8 +18,10 @@ class MyList<E>() : ArrayList<E>() {
     fun test() {
         val ls = MyList(arrayListOf<MusicMod>(), arrayListOf())
         ls[1] = MusicMod("")
+        (list as List<AlbumMod>).quickSort()
 
     }
+
 
     fun <T : Comparable<T>> List<T>.quickSort(): List<T> =
         if(size < 2) this

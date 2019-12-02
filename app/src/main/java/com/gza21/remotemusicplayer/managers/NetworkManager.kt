@@ -192,11 +192,9 @@ class NetworkManager {
             val music = MusicMod(file.fileName)
             f?.let {
                 music.loadMusicFile(it, path + file.fileName, size.toInt())
+                database.addMusic(music)
             }
-
-
         }
-
     }
 
 }
