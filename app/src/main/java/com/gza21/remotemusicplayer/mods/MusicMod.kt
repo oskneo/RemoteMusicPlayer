@@ -2,8 +2,8 @@ package com.gza21.remotemusicplayer.mods
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.gza21.remotemusicplayer.utils.IndexInterface
 import com.hierynomus.smbj.share.File
-import ealvatag.audio.AudioFile
 import ealvatag.audio.AudioFileIO
 import ealvatag.tag.FieldKey
 import ealvatag.tag.NullTag
@@ -13,7 +13,7 @@ data class MusicMod(
     var mFileName: String?,
     var mPath: String = "",
     var mSize: Long? = null,
-    var mTitle: String? = null,
+    var mTitle: String = "",
     var mCodec: String? = null,
     var mType: String? = null,
     var mIndexInCache: Int = -1,
@@ -24,14 +24,14 @@ data class MusicMod(
     var mPlaylists: ArrayList<Int> = arrayListOf(),
     var mGenre: String? = null,
     var mGenreInduce: ArrayList<Int> = arrayListOf(),
-    var mIndexInModList: Int = -1,
+    override var mIndex: Int = -1,
     var mBitrate: Int = 0,
     var mChannelNumber: Int = 0,
     var mYear: String? = null,
     var mTrack: String? = null,
     var mDiskNo: String? = null
 
-) : Parcelable {
+) : Parcelable, IndexInterface<MusicMod> {
     constructor(source: Parcel) : this(
         source.readString(),
         source.readString(),
@@ -55,6 +55,10 @@ data class MusicMod(
         source.readString()
     )
 
+    override fun compareTo(other: MusicMod): Int {
+        return mTitle.compareTo(other.mTitle)
+    }
+
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
@@ -72,7 +76,7 @@ data class MusicMod(
         writeList(mPlaylists)
         writeString(mGenre)
         writeList(mGenreInduce)
-        writeInt(mIndexInModList)
+        writeInt(mIndex)
         writeInt(mBitrate)
         writeInt(mChannelNumber)
         writeString(mYear)

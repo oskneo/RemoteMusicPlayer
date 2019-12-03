@@ -3,6 +3,7 @@ package com.gza21.remotemusicplayer.mods
 import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
+import com.gza21.remotemusicplayer.utils.IndexInterface
 import java.lang.ref.WeakReference
 import java.text.Collator
 import java.util.*
@@ -12,9 +13,9 @@ data class AlbumMod(
     var mName: String = "",
     var mArtist: ArrayList<Int> = arrayListOf(),
     var mMusics: ArrayList<Int> = arrayListOf(),
-    var mIndex: Int = -1,
+    override var mIndex: Int = -1,
     var mPhotoPath: String? = null
-) : Parcelable, Comparable<AlbumMod> {
+) : Parcelable, IndexInterface<AlbumMod> {
 
     var mPhotoIndexInCache: WeakReference<Bitmap>? = null
 

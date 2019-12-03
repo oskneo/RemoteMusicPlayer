@@ -3,19 +3,24 @@ package com.gza21.remotemusicplayer.mods
 import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
+import com.gza21.remotemusicplayer.utils.IndexInterface
 
 data class ArtistMod(
-    var mName: String?,
+    var mName: String = "",
     var mAlbums: ArrayList<Int> = arrayListOf(),
     var mMusics: ArrayList<Int> = arrayListOf(),
-    var mIndex: Int = -1
-) : Parcelable {
+    override var mIndex: Int = -1
+) : Parcelable, IndexInterface<ArtistMod> {
     constructor(source: Parcel) : this(
         source.readString(),
         ArrayList<Int>().apply { source.readList(this, Int::class.java.classLoader) },
         ArrayList<Int>().apply { source.readList(this, Int::class.java.classLoader) },
         source.readInt()
     )
+
+    override fun compareTo(other: ArtistMod): Int {
+        return mName.compareTo(other.mName)
+    }
 
     override fun describeContents() = 0
 

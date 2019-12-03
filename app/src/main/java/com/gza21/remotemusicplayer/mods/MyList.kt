@@ -1,11 +1,16 @@
 package com.gza21.remotemusicplayer.mods
 
-class MyList<E>() : ArrayList<E>() {
+import com.gza21.remotemusicplayer.utils.IndexInterface
+
+class MyList<E: IndexInterface<E>>() : ArrayList<E>() {
     var list: ArrayList<E> = arrayListOf()
     var induces: ArrayList<Int> = arrayListOf()
-    constructor(newList: ArrayList<E>, newInduces: ArrayList<Int>) : this() {
+    constructor(newList: ArrayList<E>, newInduces: ArrayList<Int> = arrayListOf()) : this() {
         list = newList
         induces = newInduces
+        if (induces.isEmpty()) {
+            induces.ensureCapacity(list.size)
+        }
     }
     override fun get(index: Int): E {
         return list.get(induces.get(index))
@@ -16,10 +21,26 @@ class MyList<E>() : ArrayList<E>() {
     }
 
     fun test() {
-        val ls = MyList(arrayListOf<MusicMod>(), arrayListOf())
-        ls[1] = MusicMod("")
-        (list as List<AlbumMod>).quickSort()
+        val ls = MyList<AlbumMod>(arrayListOf<AlbumMod>(), arrayListOf())
+        ls[1] = AlbumMod("")
 
+    }
+
+    fun setMIndex() {
+        var i = 0
+        for (item in list) {
+            item.mIndex = i++
+        }
+    }
+
+    fun quickSort() {
+        val sortedList = list.quickSort()
+        var i = 0
+        for (item in sortedList) {
+            item.mIndex
+            induces.set(i, item.mIndex)
+            i++
+        }
     }
 
 

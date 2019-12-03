@@ -113,7 +113,7 @@ data class DataBaseMod(
             }
             music.mArtistInduces.add(artist.mIndex)
         }
-        music.mIndexInModList = mMusics.size
+        music.mIndex = mMusics.size
         mMusics.add(music)
     }
 }
