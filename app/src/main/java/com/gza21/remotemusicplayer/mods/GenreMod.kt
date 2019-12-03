@@ -2,6 +2,7 @@ package com.gza21.remotemusicplayer.mods
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.utils.IndexInterface
 
 data class GenreMod(
@@ -18,7 +19,7 @@ data class GenreMod(
     )
 
     override fun compareTo(other: GenreMod): Int {
-        return mName.compareTo(other.mName)
+        return MusicDBManager.instance.compare(this.mName, other.mName)
     }
 
     override fun describeContents() = 0

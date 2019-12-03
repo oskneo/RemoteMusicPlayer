@@ -2,6 +2,7 @@ package com.gza21.remotemusicplayer.mods
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.utils.IndexInterface
 import com.hierynomus.smbj.share.File
 import ealvatag.audio.AudioFileIO
@@ -17,12 +18,12 @@ data class MusicMod(
     var mCodec: String? = null,
     var mType: String? = null,
     var mIndexInCache: Int = -1,
-    var mAlbumName: String? = null,
+    var mAlbumName: String = "",
     var mAlbumIndex: Int = -1,
     var mArtistNames: ArrayList<String> = arrayListOf(),
     var mArtistInduces: ArrayList<Int> = arrayListOf(),
     var mPlaylists: ArrayList<Int> = arrayListOf(),
-    var mGenre: String? = null,
+    var mGenre: String = "",
     var mGenreInduce: ArrayList<Int> = arrayListOf(),
     override var mIndex: Int = -1,
     var mBitrate: Int = 0,
@@ -56,7 +57,7 @@ data class MusicMod(
     )
 
     override fun compareTo(other: MusicMod): Int {
-        return mTitle.compareTo(other.mTitle)
+        return MusicDBManager.instance.compare(this.mTitle, other.mTitle)
     }
 
     override fun describeContents() = 0

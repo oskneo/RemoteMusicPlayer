@@ -20,6 +20,10 @@ class MyList<E: IndexInterface<E>>() : ArrayList<E>() {
         return list.set(induces.get(index), element)
     }
 
+    fun getInducesList(): ArrayList<Int> {
+        return induces
+    }
+
     fun test() {
         val ls = MyList<AlbumMod>(arrayListOf<AlbumMod>(), arrayListOf())
         ls[1] = AlbumMod("")

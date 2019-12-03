@@ -3,6 +3,7 @@ package com.gza21.remotemusicplayer.mods
 import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
+import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.utils.IndexInterface
 import java.lang.ref.WeakReference
 import java.text.Collator
@@ -38,8 +39,7 @@ data class AlbumMod(
     }
 
     override fun compareTo(other: AlbumMod): Int {
-        val cl = Collator.getInstance(Locale.JAPANESE)
-        return cl.compare(this.mName, other.mName)
+        return MusicDBManager.instance.compare(this.mName, other.mName)
     }
 
     companion object {
