@@ -8,7 +8,11 @@ import com.hierynomus.smbj.share.File
 import ealvatag.audio.AudioFileIO
 import ealvatag.tag.FieldKey
 import ealvatag.tag.NullTag
+import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.RandomAccessFile
+import java.nio.channels.Channel
+import java.nio.channels.Channels
 
 data class MusicMod(
     var mFileName: String?,
@@ -102,6 +106,10 @@ data class MusicMod(
         os.write(buffer, 0, size)
         val audioFile = AudioFileIO.read(f)
         val header = audioFile.audioHeader
+
+
+//        Channels.newChannel( file.inputStream )
+//        Channels.newInputStream(raf.getChannel())
 
         mChannelNumber = header.channelCount
         mBitrate = header.bitRate
