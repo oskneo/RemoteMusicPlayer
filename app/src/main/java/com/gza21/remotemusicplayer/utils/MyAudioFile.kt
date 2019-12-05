@@ -4,8 +4,12 @@ import com.google.common.base.Optional
 import com.google.common.base.Supplier
 import com.google.common.io.Files
 import ealvatag.audio.*
+import ealvatag.audio.AudioFileImpl
+import ealvatag.audio.exceptions.CannotReadException
 import ealvatag.audio.exceptions.CannotWriteException
+import ealvatag.audio.exceptions.InvalidAudioFrameException
 import ealvatag.tag.Tag
+import ealvatag.tag.TagException
 import ealvatag.tag.TagFieldContainer
 import ealvatag.tag.TagOptionSingleton
 import ealvatag.tag.id3.AbstractID3v2Tag
@@ -18,9 +22,12 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.RandomAccessFile
+import java.nio.channels.Channels
 import java.nio.channels.FileChannel
+import java.util.*
+import com.hierynomus.smbj.share.File as FileSmbj
 
-open class AudioFileImpl : AudioFile {
+open class MyAudioFile : AudioFile {
     protected var mFile: File
     protected var mAudioHeader: AudioHeader? = null
     var tagFieldContainer: TagFieldContainer? = null
@@ -69,7 +76,16 @@ open class AudioFileImpl : AudioFile {
     @Throws(CannotWriteException::class)
     override fun save() {
         checkReadOnly()
-        AudioFileIO.instance().writeFile(this)
+        try {
+            val clazz = Class.forName("AudioFileIO")
+            val method = clazz.getDeclaredMethod("instance", AudioFileIO::class.java)
+            val audioFileIO = method.invoke(null) as AudioFileIO
+            val clazzObj = audioFileIO.javaClass
+            val methodWrite = clazzObj.getDeclaredMethod("writeFile")
+            methodWrite.invoke(audioFileIO, this)
+        } catch (e: Exception) {}
+
+//        AudioFileIO.instance().writeFile(this)
     }
 
     @Throws(CannotWriteException::class)
@@ -90,13 +106,29 @@ open class AudioFileImpl : AudioFile {
             Check.CANNOT_BE_NULL_OR_EMPTY,
             "fullPathWithoutExtension"
         )
-        AudioFileIO.instance().writeFileAs(this, fullPathWithoutExtension)
+        try {
+            val clazz = Class.forName("AudioFileIO")
+            val method = clazz.getDeclaredMethod("instance", AudioFileIO::class.java)
+            val audioFileIO = method.invoke(null) as AudioFileIO
+            val clazzObj = audioFileIO.javaClass
+            val methodWrite = clazzObj.getDeclaredMethod("writeFileAs")
+            methodWrite.invoke(audioFileIO, this, fullPathWithoutExtension)
+        } catch (e: Exception) {}
+//        AudioFileIO.instance().writeFileAs(this, fullPathWithoutExtension)
     }
 
     @Throws(CannotWriteException::class)
     override fun deleteFileTag() {
         checkReadOnly()
-        AudioFileIO.instance().deleteTag(this)
+        try {
+            val clazz = Class.forName("AudioFileIO")
+            val method = clazz.getDeclaredMethod("instance", AudioFileIO::class.java)
+            val audioFileIO = method.invoke(null) as AudioFileIO
+            val clazzObj = audioFileIO.javaClass
+            val methodWrite = clazzObj.getDeclaredMethod("deleteTag")
+            methodWrite.invoke(audioFileIO, this)
+        } catch (e: Exception) {}
+//        AudioFileIO.instance().deleteTag(this)
     }
 
     override fun getFile(): File {
@@ -137,7 +169,7 @@ open class AudioFileImpl : AudioFile {
     }
 
     @Throws(CannotWriteException::class)
-    private fun makeTagSupplier(): Supplier<Tag> {
+    private fun makeTagSupplier(): Supplier<Tag?> {
         return Supplier<Tag?> { setTag(makeDefaultTag()) }
     }
 
@@ -231,4 +263,63 @@ open class AudioFileImpl : AudioFile {
         sb.append('}')
         return sb.toString()
     }
+
+    companion object {
+
+
+        fun read(file: FileSmbj): MyAudioFile? {
+
+            val ext = Files.getFileExtension(file.fileName).toLowerCase(Locale.ROOT)
+            return try {
+                val inputStream = file.inputStream
+                val channel = Channels.newChannel(inputStream)
+                val ignoreArtwork = false
+
+                val clazz = Class.forName("AudioFileIO")
+                val method = clazz.getDeclaredMethod("instance", AudioFileIO::class.java)
+                val audioFileIO = method.invoke(null) as AudioFileIO
+
+                val clazzObj = audioFileIO.javaClass
+                val methodGetReaderForExtension = clazzObj.getDeclaredMethod("getReaderForExtension")
+                val audioFileReader = methodGetReaderForExtension.invoke(audioFileIO, ext) as AudioFileReader
+
+                val clazzReaderObj = audioFileReader.javaClass
+                val methodGetEncodingInfo = clazzReaderObj.getDeclaredMethod("getEncodingInfo")
+                val info = methodGetEncodingInfo.invoke(audioFileReader, channel) as AudioHeader
+                val methodGetTag = clazzReaderObj.getDeclaredMethod("getTag")
+                val tag = methodGetTag.invoke(audioFileReader, channel, ignoreArtwork) as TagFieldContainer
+                MyAudioFile(file, ext, info, tag)
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        /**
+         * Put read header and read tag in one method so subclasses aren't forced into the 2 step process, but can optimize how the
+         * particular format is read.
+         *
+         * @param raf           the [RandomAccessFile] containing the data
+         * @param file          file information
+         * @param extension     the file extension that was used to identify the file type
+         * @param ignoreArtwork
+         *
+         * @return an [AudioFile] containing the parsed header and tag
+         *
+         * @throws CannotReadException if there is some parsing error
+         * @throws IOException         if there is an error reading from the file
+         */
+        @Throws(CannotReadException::class, IOException::class)
+        open fun makeAudioFile(
+            raf: RandomAccessFile,
+            file: File,
+            extension: String,
+            ignoreArtwork: Boolean
+        ): AudioFile? {
+            val info: GenericAudioHeader = getEncodingInfo(raf)
+            raf.seek(0)
+            return AudioFileImpl(file, extension, info, getTag(raf, ignoreArtwork))
+        }
+    }
+
+
 }
