@@ -41,6 +41,8 @@ dependencies {
     implementation 'com.ealva:ealvalog:0.5.0'
     implementation 'com.ealva:ealvalog-core:0.5.0'
     implementation 'com.ealva:ealvalog-java:0.5.0'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.9.6'
+    implementation 'org.videolan.android:libvlc-all:3.2.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

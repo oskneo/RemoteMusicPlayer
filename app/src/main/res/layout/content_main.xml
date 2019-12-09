@@ -9,5 +9,21 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:showIn="@layout/app_bar_main"
         tools:context=".activities.MainActivity">
+	
+	<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:keepScreenOn="true"
+			android:background="@android:color/background_dark"
+			android:visibility="invisible"
+			tools:context=".NativeActivity">
+		
+		<org.videolan.libvlc.util.VLCVideoLayout
+				android:id="@+id/video_layout"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:fitsSystemWindows="false"/>
+	
+	</FrameLayout>
 
 </RelativeLayout>

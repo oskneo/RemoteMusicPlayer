@@ -5,9 +5,9 @@ import android.os.Parcelable
 import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.utils.IndexInterface
 import com.hierynomus.smbj.share.File
-import ealvatag.audio.AudioFileIO
-import ealvatag.tag.FieldKey
-import ealvatag.tag.NullTag
+//import ealvatag.audio.AudioFileIO
+//import ealvatag.tag.FieldKey
+//import ealvatag.tag.NullTag
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.RandomAccessFile
@@ -99,31 +99,31 @@ data class MusicMod(
 
     fun loadMusicFile(file: File, path: String, size: Int) {
 
-        val f = java.io.File(file.fileId.toString())
-        val buffer = ByteArray(size)
-        file.read(buffer, 0)
-        val os = FileOutputStream(f)
-        os.write(buffer, 0, size)
-        val audioFile = AudioFileIO.read(f)
-        val header = audioFile.audioHeader
-
-
-//        Channels.newChannel( file.inputStream )
-//        Channels.newInputStream(raf.getChannel())
-
-        mChannelNumber = header.channelCount
-        mBitrate = header.bitRate
-        mCodec = header.encodingType
-        mSize = size.toLong()
-        mPath = path
-
-        val tag = audioFile.tag.or(NullTag.INSTANCE)
-        mGenre =  tag.getValue(FieldKey.GENRE).or("")
-        mTitle = tag.getValue(FieldKey.TITLE).or("")
-        mAlbumName = tag.getValue(FieldKey.ALBUM).or("")
-        mArtistNames.add(tag.getValue(FieldKey.ARTIST).or(""))
-        mYear = tag.getValue(FieldKey.YEAR).or("")
-        mTrack = tag.getValue(FieldKey.TRACK).or("")
-        mDiskNo = tag.getValue(FieldKey.DISC_NO).or("")
+//        val f = java.io.File(file.fileId.toString())
+//        val buffer = ByteArray(size)
+//        file.read(buffer, 0)
+//        val os = FileOutputStream(f)
+//        os.write(buffer, 0, size)
+//        val audioFile = AudioFileIO.read(f)
+//        val header = audioFile.audioHeader
+//
+//
+////        Channels.newChannel( file.inputStream )
+////        Channels.newInputStream(raf.getChannel())
+//
+//        mChannelNumber = header.channelCount
+//        mBitrate = header.bitRate
+//        mCodec = header.encodingType
+//        mSize = size.toLong()
+//        mPath = path
+//
+//        val tag = audioFile.tag.or(NullTag.INSTANCE)
+//        mGenre =  tag.getValue(FieldKey.GENRE).or("")
+//        mTitle = tag.getValue(FieldKey.TITLE).or("")
+//        mAlbumName = tag.getValue(FieldKey.ALBUM).or("")
+//        mArtistNames.add(tag.getValue(FieldKey.ARTIST).or(""))
+//        mYear = tag.getValue(FieldKey.YEAR).or("")
+//        mTrack = tag.getValue(FieldKey.TRACK).or("")
+//        mDiskNo = tag.getValue(FieldKey.DISC_NO).or("")
     }
 }

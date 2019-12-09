@@ -1,8 +1,8 @@
 package com.gza21.remotemusicplayer.activities
 
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -11,9 +11,18 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.gza21.remotemusicplayer.R
 import kotlinx.android.synthetic.main.app_bar_main.*
+import org.videolan.libvlc.LibVLC
+import org.videolan.libvlc.Media
+import org.videolan.libvlc.MediaPlayer
+import org.videolan.libvlc.util.VLCVideoLayout
+import java.io.IOException
+import java.util.*
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    var mLibVLC: LibVLC? = null
+    var mMediaPlayer: MediaPlayer? = null
+    private var mVideoLayout: VLCVideoLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +43,42 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         toggle.syncState()
 
         navView.setNavigationItemSelectedListener(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val args = ArrayList<String>()
+        args.add("-vvv")
+        mLibVLC = LibVLC(this, args)
+        mMediaPlayer = MediaPlayer(mLibVLC)
+
+        mVideoLayout = findViewById<VLCVideoLayout>(R.id.video_layout)
+
+        mMediaPlayer!!.attachViews(
+            mVideoLayout!!,
+            null,
+            false,
+            false
+        )
+
+        val fd = resources.openRawResourceFd(R.raw.bbb)
+        try {
+            val media = Media(
+                mLibVLC,
+                fd
+            )
+            mMediaPlayer!!.media = media
+            media.release()
+            media.getMeta(Media.Meta.ArtworkURL)
+        } catch (e: IOException) {
+            throw RuntimeException("Invalid asset folder")
+        }
+        mMediaPlayer!!.play()
+        mMediaPlayer?.i
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     override fun onBackPressed() {
