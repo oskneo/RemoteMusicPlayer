@@ -16,7 +16,7 @@
 			tools:text="Name: aaaaaa"/>
 	
 	<TextView
-			android:id="@+id/server_addres"
+			android:id="@+id/server_address"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="@dimen/default_margin"

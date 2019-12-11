@@ -4,55 +4,65 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.managers.ServerManager
 import com.gza21.remotemusicplayer.mods.ServerMod
 
-class ServerAdapter(val context: Context, val listener: ServerListener) : BaseAdapter() {
+
+class ServerAdapter(val context: Context, val listener: ServerListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val mSvrMgr = ServerManager.instance
-    var mServers: ArrayList<ServerMod> = arrayListOf()
+    var mSources: ArrayList<Any> = arrayListOf()
+    var mType = 0
+
+    class ServerViewHolder(var layoutView: View) : RecyclerView.ViewHolder(layoutView) {
+        val mName: TextView
+        val mAddress: TextView
+        val mStatus: TextView
+
+        init {
+            mName = layoutView.findViewById<TextView>(R.id.server_name)
+            mAddress = layoutView.findViewById<TextView>(R.id.server_address)
+            mStatus = layoutView.findViewById<TextView>(R.id.server_status)
+        }
+    }
 
     init {
-        mServers.clear()
+        mSources.clear()
     }
 
     fun updateServers() {
-        mServers.clear()
-        mServers.addAll(mSvrMgr.mServers)
+        mSources.clear()
+        mSources.addAll(mSvrMgr.mServers)
         notifyDataSetChanged()
     }
 
-    override fun getCount(): Int {
-        return mServers.size
+    override fun getItemCount(): Int {
+        return mSources.size
     }
 
-    override fun getItem(position: Int): ServerMod {
-        return mServers.get(position)
-    }
-
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
-
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-
-        var view = convertView ?: run {
-            val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            inflater.inflate(R.layout.view_server_item, null)
-        }
-
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val server = getItem(position)
-        view.findViewById<TextView>(R.id.server_name)?.text = server.mName
-        view.findViewById<TextView>(R.id.server_address)?.text = server.mAddress
-        view.findViewById<TextView>(R.id.server_status)?.setText(if (server.mIsConnected) R.string.connected else R.string.not_connected)
-
-        view?.setOnClickListener {
-            listener.onConnect(server)
+        if (holder is ServerViewHolder && server is ServerMod) {
+            holder.layoutView.setOnClickListener {
+                listener.onConnect(server)
+            }
+            holder.mAddress.text = server.mAddress
+            holder.mName.text = server.mName
+            holder.mStatus.setText(if (server.mIsConnected) R.string.connected else R.string.not_connected)
         }
-        return view
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val view = LayoutInflater.from(context).inflate(R.layout.view_server_item, parent, false)
+        val viewHolder = ServerViewHolder(view)
+        return viewHolder
+    }
+
+    fun getItem(position: Int): Any {
+        return mSources.get(position)
     }
 
     interface ServerListener {

@@ -4,20 +4,20 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.ListView
+import android.widget.TextView
 import androidx.annotation.IdRes
-import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.adapters.ServerAdapter
 import com.gza21.remotemusicplayer.dialogs.ServerConnectDialogFragment
 import com.gza21.remotemusicplayer.managers.ServerManager
 import com.gza21.remotemusicplayer.mods.ServerMod
 import com.gza21.remotemusicplayer.utils.Helper
+
 
 class NetworkActivity : BaseActivity() {
 
@@ -37,13 +37,16 @@ class NetworkActivity : BaseActivity() {
     }
 
     private fun getList() {
-        val listView = findViewById<ListView>(R.id.server_list)
+        val recyclerView = findViewById<RecyclerView>(R.id.server_list)
+        val layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerView.layoutManager = layoutManager
         mAdapter = ServerAdapter(this, object : ServerAdapter.ServerListener {
             override fun onConnect(server: ServerMod) {
                 openServerDialog(server)
             }
         })
-        listView?.adapter = mAdapter
+        recyclerView?.adapter = mAdapter
     }
 
     fun updateList() {
@@ -76,11 +79,16 @@ class NetworkActivity : BaseActivity() {
             findViewById<EditText>(R.id.edit_text)?.text?.toString() ?: ""
     }
 
-    private fun setEditedContent(view: View?, @IdRes id: Int, text: String?) {
+    private fun setEditedContent(view: View?, @IdRes id: Int, text: String? = null, @StringRes title: Int? = null) {
         text?.let {
             view?.findViewById<LinearLayout>(id)?.
                 findViewById<EditText>(R.id.edit_text)?.setText(it)
         }
+        title?.let {
+            view?.findViewById<LinearLayout>(id)?.
+                findViewById<TextView>(R.id.edit_title)?.setText(it)
+        }
+
     }
 
     /**
@@ -89,12 +97,10 @@ class NetworkActivity : BaseActivity() {
      */
     fun getServerDialog(server: ServerMod?) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_server, null)
-        server?.let {
-            setEditedContent(dialogView, R.id.server_name, it.mName)
-            setEditedContent(dialogView, R.id.server_address, it.mAddress)
-            setEditedContent(dialogView, R.id.server_username, it.mUserName)
-            setEditedContent(dialogView, R.id.server_pass, it.mPassword)
-        }
+        setEditedContent(dialogView, R.id.server_name, server?.mName, R.string.server_name)
+        setEditedContent(dialogView, R.id.server_address, server?.mAddress, R.string.server_address)
+        setEditedContent(dialogView, R.id.server_username, server?.mUserName, R.string.username)
+        setEditedContent(dialogView, R.id.server_pass, server?.mPassword, R.string.password)
         mAlertDialog = Helper.getAlertDialog(this, mAlertDialog, dialogView, R.string.ok, {
             val mServer = ServerMod(
                 getEditedContent(dialogView, R.id.server_name),

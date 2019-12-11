@@ -25,6 +25,9 @@ class Helper {
                 .setPositiveButton(okId, { dialog, _ ->
                     callbacks()
                     dialog.dismiss()
+                })
+                .setNegativeButton("Cancel", { dialog, which ->
+                    dialog?.dismiss()
                 }).create()
             mDialog.show()
             return  mDialog

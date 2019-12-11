@@ -1,5 +1,6 @@
 package com.gza21.remotemusicplayer.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -16,6 +17,7 @@ import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
 import org.videolan.libvlc.util.VLCVideoLayout
 import java.io.IOException
+import java.lang.Exception
 import java.util.*
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -45,36 +47,44 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         navView.setNavigationItemSelectedListener(this)
     }
 
+    private fun playDemo() {
+        try {
+            val args = ArrayList<String>()
+            args.add("-vvv")
+            mLibVLC = LibVLC(this, args)
+            mMediaPlayer = MediaPlayer(mLibVLC)
+
+            mVideoLayout = findViewById<VLCVideoLayout>(R.id.video_layout)
+
+            mMediaPlayer!!.attachViews(
+                mVideoLayout!!,
+                null,
+                false,
+                false
+            )
+
+            val fd = resources.openRawResourceFd(0)//R.raw.bbb
+            try {
+                val media = Media(
+                    mLibVLC,
+                    fd
+                )
+                mMediaPlayer!!.media = media
+                media.release()
+                media.getMeta(Media.Meta.ArtworkURL)
+            } catch (e: IOException) {
+                throw RuntimeException("Invalid asset folder")
+            }
+            mMediaPlayer!!.play()
+        } catch (e: Exception) {
+
+        }
+
+    }
+
     override fun onStart() {
         super.onStart()
-        val args = ArrayList<String>()
-        args.add("-vvv")
-        mLibVLC = LibVLC(this, args)
-        mMediaPlayer = MediaPlayer(mLibVLC)
-
-        mVideoLayout = findViewById<VLCVideoLayout>(R.id.video_layout)
-
-        mMediaPlayer!!.attachViews(
-            mVideoLayout!!,
-            null,
-            false,
-            false
-        )
-
-        val fd = resources.openRawResourceFd(R.raw.bbb)
-        try {
-            val media = Media(
-                mLibVLC,
-                fd
-            )
-            mMediaPlayer!!.media = media
-            media.release()
-            media.getMeta(Media.Meta.ArtworkURL)
-        } catch (e: IOException) {
-            throw RuntimeException("Invalid asset folder")
-        }
-        mMediaPlayer!!.play()
-        mMediaPlayer?.i
+        playDemo()
     }
 
     override fun onResume() {
@@ -112,8 +122,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.nav_home -> {
                 // Handle the camera action
             }
-            R.id.nav_gallery -> {
-
+            R.id.nav_local_network -> {
+                Intent(this, NetworkActivity::class.java).also {
+                    startActivity(it)
+                }
             }
             R.id.nav_slideshow -> {
 

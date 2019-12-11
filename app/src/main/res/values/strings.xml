@@ -13,6 +13,7 @@
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
+    <string name="local_network">Local Network</string>
     
     <!--Util-->
     <string name="ok">Ok</string>
@@ -20,4 +21,8 @@
     <!--Network Activity-->
     <string name="not_connected">Not connected</string>
     <string name="connected">Connected</string>
+    <string name="server_name">Server Name</string>
+    <string name="server_address">Server Address</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
 </resources>

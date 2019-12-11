@@ -20,6 +20,15 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+    
+        <!-- Local Activities -->
+        
+        <activity
+                android:name=".activities.NetworkActivity"
+                android:label="@string/local_network"
+                android:theme="@style/AppTheme.NoActionBar"
+                android:screenOrientation="portrait"/>
+            
     </application>
 
 </manifest>

@@ -24,7 +24,7 @@ open class BaseActivity : AppCompatActivity() {
         val layoutViewId = getLayoutView()
         if (layoutViewId != 0 && mRootView == null) {
             val root = findViewById<RelativeLayout>(R.id.root_view)
-            mRootView = layoutInflater.inflate(layoutViewId, root) as ViewGroup?
+            mRootView = layoutInflater.inflate(layoutViewId, root, false) as ViewGroup?
             root?.addView(mRootView)
         }
 
