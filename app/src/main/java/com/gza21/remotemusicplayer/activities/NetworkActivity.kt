@@ -1,6 +1,8 @@
 package com.gza21.remotemusicplayer.activities
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -17,17 +19,52 @@ import com.gza21.remotemusicplayer.dialogs.ServerConnectDialogFragment
 import com.gza21.remotemusicplayer.managers.ServerManager
 import com.gza21.remotemusicplayer.mods.ServerMod
 import com.gza21.remotemusicplayer.utils.Helper
+import org.videolan.libvlc.util.MediaBrowser
+import org.videolan.libvlc.LibVLC
+import java.util.ArrayList
+import android.os.Process
+import org.videolan.libvlc.Media
 
 
-class NetworkActivity : BaseActivity() {
+class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
 
     var mAdapter: ServerAdapter? = null
     val mSvMgr = ServerManager.instance
+
+    override fun onBrowseEnd() {
+
+    }
+
+    override fun onMediaAdded(index: Int, media: Media?) {
+        media?.let {
+            mSvMgr.add(ServerMod(it.))
+        }
+
+    }
+
+    override fun onMediaRemoved(index: Int, media: Media?) {
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getList()
 
+    }
+
+    private val browserHandler by lazy {
+        val handlerThread = HandlerThread("vlc-mProvider", Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_LESS_FAVORABLE)
+        handlerThread.start()
+        Handler(handlerThread.looper)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val args = ArrayList<String>()
+        args.add("-vvv")
+        val mLibVlc = LibVLC(this, args)
+        val browser = MediaBrowser(mLibVlc, this, browserHandler)
+        browser.discoverNetworkShares()
     }
 
     private fun openServerDialog(server: ServerMod) {
