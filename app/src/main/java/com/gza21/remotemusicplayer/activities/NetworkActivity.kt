@@ -26,10 +26,19 @@ import android.os.Process
 import org.videolan.libvlc.Media
 
 
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.channels.mapNotNullTo
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+
+
 class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
 
     var mAdapter: ServerAdapter? = null
     val mSvMgr = ServerManager.instance
+    val mutex = Mutex()
 
     override fun onBrowseEnd() {
 
@@ -37,9 +46,14 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
 
     override fun onMediaAdded(index: Int, media: Media?) {
         media?.let {
-            mSvMgr.add(ServerMod(it.))
+            runOnUiThread {
+                synchronized(this@NetworkActivity) {
+                    val server = ServerMod(it.uri.toString())
+                    mSvMgr.add(server)
+                    mAdapter?.updateServers()
+                }
+            }
         }
-
     }
 
     override fun onMediaRemoved(index: Int, media: Media?) {
@@ -60,9 +74,10 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
 
     override fun onResume() {
         super.onResume()
+
         val args = ArrayList<String>()
         args.add("-vvv")
-        val mLibVlc = LibVLC(this, args)
+        val mLibVlc = LibVLC(applicationContext, args)
         val browser = MediaBrowser(mLibVlc, this, browserHandler)
         browser.discoverNetworkShares()
     }

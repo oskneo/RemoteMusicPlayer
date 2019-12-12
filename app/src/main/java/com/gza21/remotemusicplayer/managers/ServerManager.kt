@@ -11,7 +11,7 @@ class ServerManager {
     }
 
     fun add(server: ServerMod) {
-        mServers.find { it.mAddress == server.mAddress }?.let {
+        mServers.find { it == server }?.let {
             mServers.remove(it)
         }
         mServers.add(server)
