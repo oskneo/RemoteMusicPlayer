@@ -1,5 +1,6 @@
 package com.gza21.remotemusicplayer.mods
 
+import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 
@@ -10,7 +11,8 @@ data class ServerMod(
     var mPassword: String? = null,
     var mDomain: String = "",
     var mIsConnected: Boolean = false,
-    var mDbPath: String? = null
+    var mDbPath: String? = null,
+    var mUri: Uri? = null
 ) : Parcelable {
     constructor(source: Parcel) : this(
         source.readString(),
@@ -19,7 +21,8 @@ data class ServerMod(
         source.readString(),
         source.readString(),
         1 == source.readInt(),
-        source.readString()
+        source.readString(),
+        source.readParcelable<Uri>(Uri::class.java.classLoader)
     )
 
     override fun describeContents() = 0
@@ -32,6 +35,7 @@ data class ServerMod(
         writeString(mDomain)
         writeInt((if (mIsConnected) 1 else 0))
         writeString(mDbPath)
+        writeParcelable(mUri, 0)
     }
 
     companion object {

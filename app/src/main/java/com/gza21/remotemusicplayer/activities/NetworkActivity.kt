@@ -1,8 +1,11 @@
 package com.gza21.remotemusicplayer.activities
 
+
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
+import android.os.Process
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -13,25 +16,18 @@ import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.common.collect.Iterables
 import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.adapters.ServerAdapter
 import com.gza21.remotemusicplayer.dialogs.ServerConnectDialogFragment
+import com.gza21.remotemusicplayer.managers.LibVlcManager
 import com.gza21.remotemusicplayer.managers.ServerManager
 import com.gza21.remotemusicplayer.mods.ServerMod
 import com.gza21.remotemusicplayer.utils.Helper
-import org.videolan.libvlc.util.MediaBrowser
-import org.videolan.libvlc.LibVLC
-import java.util.ArrayList
-import android.os.Process
-import org.videolan.libvlc.Media
-
-
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.actor
-import kotlinx.coroutines.channels.mapNotNullTo
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import org.videolan.libvlc.Media
+import org.videolan.libvlc.util.MediaBrowser
+import java.net.URLDecoder
 
 
 class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
@@ -39,18 +35,29 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
     var mAdapter: ServerAdapter? = null
     val mSvMgr = ServerManager.instance
     val mutex = Mutex()
+    val mLibMgr = LibVlcManager.instance
+    var mBrowser: MediaBrowser? = null
+    var mIsEnd = true
+    val mThread = Thread()
 
     override fun onBrowseEnd() {
-
+        synchronized(this@NetworkActivity) {
+            mIsEnd = true
+        }
     }
 
     override fun onMediaAdded(index: Int, media: Media?) {
         media?.let {
             runOnUiThread {
                 synchronized(this@NetworkActivity) {
-                    val server = ServerMod(it.uri.toString())
+                    if (mIsEnd) {
+                        mSvMgr.mServers.clear()
+                    }
+
+                    val server = ServerMod(Iterables.getLast(URLDecoder.decode(it.uri.toString(), "UTF-8").split('/')), it.uri.toString(), mUri = it.uri)
                     mSvMgr.add(server)
                     mAdapter?.updateServers()
+                    mIsEnd = false
                 }
             }
         }
@@ -72,14 +79,18 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
         Handler(handlerThread.looper)
     }
 
+
+
     override fun onResume() {
         super.onResume()
+        mBrowser = MediaBrowser(mLibMgr.mLibVlc, this, browserHandler)
+        mThread.run {
+            mLibMgr.setDialogCallback()
 
-        val args = ArrayList<String>()
-        args.add("-vvv")
-        val mLibVlc = LibVLC(applicationContext, args)
-        val browser = MediaBrowser(mLibVlc, this, browserHandler)
-        browser.discoverNetworkShares()
+        }
+        mBrowser?.discoverNetworkShares()
+//        val uri = Uri.Builder().appendPath("smb://OSK666-PC").build()
+//        mBrowser?.browse(uri, MediaBrowser.Flag.Interact)
     }
 
     private fun openServerDialog(server: ServerMod) {
@@ -95,10 +106,28 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
         recyclerView.layoutManager = layoutManager
         mAdapter = ServerAdapter(this, object : ServerAdapter.ServerListener {
             override fun onConnect(server: ServerMod) {
-                openServerDialog(server)
+//                openServerDialog(server)
+                synchronized(this@NetworkActivity) {
+                    mIsEnd = true
+                }
+                openPath(server)
             }
         })
         recyclerView?.adapter = mAdapter
+    }
+    fun openPath(server: ServerMod) {
+//        mThread.run {
+//
+//        }
+//        mBrowser?.release()
+//        synchronized(this@NetworkActivity) {
+//            Thread {
+//                mBrowser?.browse(server.mAddress, MediaBrowser.Flag.Interact)
+//            }.start()
+//        }
+        mBrowser?.browse(server.mUri, MediaBrowser.Flag.Interact)
+
+
     }
 
     fun updateList() {
