@@ -5,13 +5,13 @@
 		android:layout_height="wrap_content"
 		android:orientation="vertical"
 		android:gravity="center_horizontal"
-		android:layout_margin="@dimen/default_margin">
+		android:layout_margin="@dimen/margin_large">
 	
 	<Button
 			android:id="@+id/btn_connect"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_margin="@dimen/default_margin"
+			android:layout_margin="@dimen/margin_large"
 			android:layout_weight="1"
 			android:text="Connect"/>
 	
@@ -19,7 +19,7 @@
 			android:id="@+id/btn_disconnect"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_margin="@dimen/default_margin"
+			android:layout_margin="@dimen/margin_large"
 			android:layout_weight="1"
 			android:text="Disconnect"/>
 	
@@ -27,7 +27,7 @@
 			android:id="@+id/btn_delete"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_margin="@dimen/default_margin"
+			android:layout_margin="@dimen/margin_large"
 			android:layout_weight="1"
 			android:text="Delete"/>
 	
@@ -35,7 +35,7 @@
 			android:id="@+id/btn_edit"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_margin="@dimen/default_margin"
+			android:layout_margin="@dimen/margin_large"
 			android:layout_weight="1"
 			android:text="Edit"/>
 

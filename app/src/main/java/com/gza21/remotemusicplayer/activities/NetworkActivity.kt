@@ -1,7 +1,6 @@
 package com.gza21.remotemusicplayer.activities
 
 
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
@@ -116,15 +115,6 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
         recyclerView?.adapter = mAdapter
     }
     fun openPath(server: ServerMod) {
-//        mThread.run {
-//
-//        }
-//        mBrowser?.release()
-//        synchronized(this@NetworkActivity) {
-//            Thread {
-//                mBrowser?.browse(server.mAddress, MediaBrowser.Flag.Interact)
-//            }.start()
-//        }
         mBrowser?.browse(server.mUri, MediaBrowser.Flag.Interact)
 
 

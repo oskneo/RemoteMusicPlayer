@@ -1,22 +1,19 @@
 package com.gza21.remotemusicplayer.mods
 
+import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.utils.IndexInterface
 import com.hierynomus.smbj.share.File
+import org.videolan.libvlc.Media
 //import ealvatag.audio.AudioFileIO
 //import ealvatag.tag.FieldKey
 //import ealvatag.tag.NullTag
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.RandomAccessFile
-import java.nio.channels.Channel
-import java.nio.channels.Channels
 
 data class MusicMod(
-    var mFileName: String?,
-    var mPath: String = "",
+    var mFileName: String? = null,
+    var mArtPath: String = "",
     var mSize: Long? = null,
     var mTitle: String = "",
     var mCodec: String? = null,
@@ -34,7 +31,9 @@ data class MusicMod(
     var mChannelNumber: Int = 0,
     var mYear: String? = null,
     var mTrack: String? = null,
-    var mDiskNo: String? = null
+    var mDiskNo: String? = null,
+    var mUri: Uri? = null,
+    var mDuration: Long = 0L
 
 ) : Parcelable, IndexInterface<MusicMod> {
     constructor(source: Parcel) : this(
@@ -57,8 +56,14 @@ data class MusicMod(
         source.readInt(),
         source.readString(),
         source.readString(),
-        source.readString()
+        source.readString(),
+        source.readParcelable(Uri::class.java.classLoader),
+        source.readLong()
     )
+
+    constructor(media: Media) : this() {
+        loadMusicMedia(media)
+    }
 
     override fun compareTo(other: MusicMod): Int {
         return MusicDBManager.instance.compare(this.mTitle, other.mTitle)
@@ -68,7 +73,7 @@ data class MusicMod(
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeString(mFileName)
-        writeString(mPath)
+        writeString(mArtPath)
         writeValue(mSize)
         writeString(mTitle)
         writeString(mCodec)
@@ -87,6 +92,8 @@ data class MusicMod(
         writeString(mYear)
         writeString(mTrack)
         writeString(mDiskNo)
+        writeParcelable(mUri, 0)
+        writeLong(mDuration)
     }
 
     companion object {
@@ -125,5 +132,25 @@ data class MusicMod(
 //        mYear = tag.getValue(FieldKey.YEAR).or("")
 //        mTrack = tag.getValue(FieldKey.TRACK).or("")
 //        mDiskNo = tag.getValue(FieldKey.DISC_NO).or("")
+    }
+
+    fun loadMusicMedia(music: Media) {
+
+
+        mGenre =  music.getMeta(Media.Meta.Genre)
+        mTitle = music.getMeta(Media.Meta.Title)
+        mAlbumName = music.getMeta(Media.Meta.Album)
+        mArtistNames.add(music.getMeta(Media.Meta.Artist))
+        mYear = music.getMeta(Media.Meta.Date)
+        mTrack = music.getMeta(Media.Meta.TrackNumber)
+        mDiskNo = music.getMeta(Media.Meta.DiscNumber)
+        mUri = music.uri
+        mArtPath = music.getMeta(Media.Meta.ArtworkURL)
+        mSize = music.stats?.readBytes?.toLong() ?: 0
+//        mCodec = music.stats?.
+        mBitrate = music.stats?.inputBitrate?.toInt() ?: 0
+        mDuration = music.duration
+
+
     }
 }

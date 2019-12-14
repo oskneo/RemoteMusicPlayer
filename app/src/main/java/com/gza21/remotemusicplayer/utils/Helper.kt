@@ -32,5 +32,13 @@ class Helper {
             mDialog.show()
             return  mDialog
         }
+
+        fun convertMilisec2Min(miliSec: Long): String {
+
+            val sec = miliSec / 1000
+            val min = sec / 60
+            val r = sec % 60
+            return "$min:${if (r < 10) "0$r" else "$r"}"
+        }
     }
 }
