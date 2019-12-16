@@ -112,6 +112,7 @@ data class MusicMod(
         private val semaphore = Semaphore(0)
         private var mPlayer: MediaPlayer? = null
         private var mUrl: String? = null
+        var locked = true
 
 
         fun loadUri(uri: Uri?, cacheArt: Boolean = false): MusicMod? {
@@ -132,7 +133,10 @@ data class MusicMod(
                     }
                     t.start()
                     Log.e("Sema", "Aquire")
-                    semaphore.acquire()
+//                    semaphore.acquire()
+                    while (locked) {
+                        Thread.sleep(50)
+                    }
                     t.run {
                         mPlayer?.release()
                     }
@@ -156,6 +160,10 @@ data class MusicMod(
                 }
                 if (mPlayer?.media?.getMeta(Media.Meta.Title)?.endsWith(mUrl!!.takeLast(3)) == false) {
                     semaphore.release()
+                    synchronized(this@Companion) {
+                        locked = false
+                    }
+
                 }
             }
         }
