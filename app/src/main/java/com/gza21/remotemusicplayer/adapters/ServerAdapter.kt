@@ -52,12 +52,15 @@ class ServerAdapter(val context: Context, val listener: ServerListener) : Recycl
             holder.mAddress.text = server.mAddress
             holder.mName.text = server.mName
             holder.mStatus.setText(if (server.mIsConnected) R.string.connected else R.string.not_connected)
+        } else {
+
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.view_server_item, parent, false)
         val viewHolder = ServerViewHolder(view)
+        view.tag = viewHolder
         return viewHolder
     }
 

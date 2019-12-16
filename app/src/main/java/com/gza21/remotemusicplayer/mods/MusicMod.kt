@@ -3,10 +3,16 @@ package com.gza21.remotemusicplayer.mods
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
+import com.gza21.remotemusicplayer.managers.LibVlcManager
 import com.gza21.remotemusicplayer.managers.MusicDBManager
+import com.gza21.remotemusicplayer.utils.Helper
 import com.gza21.remotemusicplayer.utils.IndexInterface
 import com.hierynomus.smbj.share.File
 import org.videolan.libvlc.Media
+import org.videolan.libvlc.MediaPlayer
+import java.util.concurrent.Semaphore
+
 //import ealvatag.audio.AudioFileIO
 //import ealvatag.tag.FieldKey
 //import ealvatag.tag.NullTag
@@ -102,6 +108,65 @@ data class MusicMod(
             override fun createFromParcel(source: Parcel): MusicMod = MusicMod(source)
             override fun newArray(size: Int): Array<MusicMod?> = arrayOfNulls(size)
         }
+
+        private val semaphore = Semaphore(0)
+        private var mPlayer: MediaPlayer? = null
+        private var mUrl: String? = null
+
+
+        fun loadUri(uri: Uri?, cacheArt: Boolean = false): MusicMod? {
+            mUrl = uri?.toString()
+            if (Helper.isCorrectExt(uri)) {
+                val music = MusicMod()
+                val media = Media(LibVlcManager.instance.mLibVlc, uri)
+                if (cacheArt) {
+
+//                    media.setEventListener(CacheMediaListener)
+//                    mPlayer?.volume = 0
+                    val t = Thread {
+                        mPlayer = org.videolan.libvlc.MediaPlayer(media)
+                        mPlayer?.setEventListener {
+                            Log.e("Sema", "Sema")
+                        }
+                        mPlayer?.play()
+                    }
+                    t.start()
+                    Log.e("Sema", "Aquire")
+                    semaphore.acquire()
+                    t.run {
+                        mPlayer?.release()
+                    }
+                    t.start()
+
+                } else {
+                    media.parse(Media.Parse.ParseNetwork)
+                }
+                music.loadMusicMedia(media)
+                media.release()
+                return music
+            } else {
+                return null
+            }
+        }
+        val CachePlayerListener = object : org.videolan.libvlc.MediaPlayer.EventListener {
+            override fun onEvent(event: org.videolan.libvlc.MediaPlayer.Event?) {
+                Log.e("Sema", "Sema")
+                if (mPlayer?.media == null || mUrl == null) {
+                    return
+                }
+                if (mPlayer?.media?.getMeta(Media.Meta.Title)?.endsWith(mUrl!!.takeLast(3)) == false) {
+                    semaphore.release()
+                }
+            }
+        }
+        val CacheMediaListener = object : org.videolan.libvlc.Media.EventListener {
+            override fun onEvent(event: Media.Event?) {
+                Log.e("Sema", "Sema")
+                semaphore.release()
+            }
+        }
+
+
     }
 
     fun loadMusicFile(file: File, path: String, size: Int) {
@@ -137,19 +202,27 @@ data class MusicMod(
     fun loadMusicMedia(music: Media) {
 
 
-        mGenre =  music.getMeta(Media.Meta.Genre)
-        mTitle = music.getMeta(Media.Meta.Title)
-        mAlbumName = music.getMeta(Media.Meta.Album)
-        mArtistNames.add(music.getMeta(Media.Meta.Artist))
-        mYear = music.getMeta(Media.Meta.Date)
-        mTrack = music.getMeta(Media.Meta.TrackNumber)
-        mDiskNo = music.getMeta(Media.Meta.DiscNumber)
+        mGenre =  music.getMeta(Media.Meta.Genre) ?: ""
+        mTitle = music.getMeta(Media.Meta.Title) ?: ""
+        mAlbumName = music.getMeta(Media.Meta.Album) ?: ""
+        music.getMeta(Media.Meta.Artist)?.let {
+            mArtistNames.add(it)
+        }
+        mYear = music.getMeta(Media.Meta.Date) ?: ""
+        mTrack = music.getMeta(Media.Meta.TrackNumber) ?: ""
+        mDiskNo = music.getMeta(Media.Meta.DiscNumber) ?: ""
         mUri = music.uri
-        mArtPath = music.getMeta(Media.Meta.ArtworkURL)
+        mArtPath = music.getMeta(Media.Meta.ArtworkURL) ?: ""
         mSize = music.stats?.readBytes?.toLong() ?: 0
-//        mCodec = music.stats?.
-        mBitrate = music.stats?.inputBitrate?.toInt() ?: 0
-        mDuration = music.duration
+
+        mDuration = music.duration ?: 0
+        val track = music.getTrack(0) as? Media.AudioTrack
+        track?.let {
+            mBitrate = track.bitrate
+            mCodec = track.codec
+            mChannelNumber = track.channels
+        }
+
 
 
     }

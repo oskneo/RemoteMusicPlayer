@@ -10,16 +10,26 @@ class ServerManager {
         val instance by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { ServerManager() }
     }
 
-    fun add(server: ServerMod) {
-        mServers.find { it == server }?.let {
-            mServers.remove(it)
+    fun clear() {
+        synchronized(this@ServerManager) {
+            mServers.clear()
         }
-        mServers.add(server)
+    }
+
+    fun add(server: ServerMod) {
+        synchronized(this@ServerManager) {
+            mServers.find { it == server }?.let {
+                mServers.remove(it)
+            }
+            mServers.add(server)
+        }
     }
 
     fun remove(server: ServerMod?) {
-        server?.let {
-            mServers.remove(it)
+        synchronized(this@ServerManager) {
+            server?.let {
+                mServers.remove(it)
+            }
         }
     }
 

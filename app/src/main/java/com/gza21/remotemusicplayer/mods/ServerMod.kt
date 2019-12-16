@@ -3,16 +3,19 @@ package com.gza21.remotemusicplayer.mods
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
+import org.videolan.libvlc.Media
 
 data class ServerMod(
     var mName: String? = null,
-    var mAddress: String? = null,
+    var mAddress: String = "",
     var mUserName: String? = null,
     var mPassword: String? = null,
     var mDomain: String = "",
     var mIsConnected: Boolean = false,
     var mDbPath: String? = null,
-    var mUri: Uri? = null
+    var mUri: Uri? = null,
+    var mIsRoot: Boolean = false, // Not to parcel
+    var mType: Int? = null // Not to parcel
 ) : Parcelable {
     constructor(source: Parcel) : this(
         source.readString(),

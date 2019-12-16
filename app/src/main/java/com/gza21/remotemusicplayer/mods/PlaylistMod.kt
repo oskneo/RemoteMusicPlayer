@@ -9,8 +9,8 @@ import com.gza21.remotemusicplayer.utils.IndexInterface
 data class PlaylistMod(
     var mName: String = "",
     var mPhoto: Bitmap? = null,
-    var mMusics: ArrayList<Int>? = arrayListOf(),
-    var mAlbums: ArrayList<Int>? = arrayListOf(),
+    var mMusics: ArrayList<Int> = arrayListOf(),
+    var mAlbums: ArrayList<Int> = arrayListOf(),
     override var mIndex: Int = -1
 ) : Parcelable, IndexInterface<PlaylistMod> {
     constructor(source: Parcel) : this(

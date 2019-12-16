@@ -1,16 +1,14 @@
 package com.gza21.remotemusicplayer.utils
 
-import android.content.ComponentCallbacks
 import android.content.Context
-import android.view.LayoutInflater
+import android.net.Uri
+import android.os.Environment
 import android.view.View
-import android.widget.EditText
-import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import com.gza21.remotemusicplayer.R
-import com.gza21.remotemusicplayer.managers.ServerManager
-import com.gza21.remotemusicplayer.mods.ServerMod
+import org.videolan.BuildConfig
+import java.io.File
+import java.util.*
 
 class Helper {
     companion object {
@@ -40,5 +38,14 @@ class Helper {
             val r = sec % 60
             return "$min:${if (r < 10) "0$r" else "$r"}"
         }
+
+        fun isCorrectExt(uri: Uri?): Boolean {
+            val address = uri?.toString() ?: ""
+            val ext = address.substring(address.lastIndexOf('.')).toLowerCase(Locale.US)
+            val allowedExt = listOf(".m4a", ".mp4", ".flac", ".wav", ".aac", ".mp3")
+            return allowedExt.contains(ext)
+        }
+
+
     }
 }

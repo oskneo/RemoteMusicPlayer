@@ -1,10 +1,12 @@
 package com.gza21.remotemusicplayer.activities
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Process
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -20,13 +22,16 @@ import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.adapters.ServerAdapter
 import com.gza21.remotemusicplayer.dialogs.ServerConnectDialogFragment
 import com.gza21.remotemusicplayer.managers.LibVlcManager
+import com.gza21.remotemusicplayer.managers.PlayerListManager
 import com.gza21.remotemusicplayer.managers.ServerManager
+import com.gza21.remotemusicplayer.mods.MusicMod
 import com.gza21.remotemusicplayer.mods.ServerMod
 import com.gza21.remotemusicplayer.utils.Helper
 import kotlinx.coroutines.sync.Mutex
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.util.MediaBrowser
 import java.net.URLDecoder
+import java.util.*
 
 
 class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
@@ -38,26 +43,45 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
     var mBrowser: MediaBrowser? = null
     var mIsEnd = true
     val mThread = Thread()
+    val mStack: Stack<ServerMod> = Stack()
 
     override fun onBrowseEnd() {
         synchronized(this@NetworkActivity) {
             mIsEnd = true
         }
+        runOnUiThread {
+            mAdapter?.updateServers()
+        }
     }
 
     override fun onMediaAdded(index: Int, media: Media?) {
         media?.let {
+            val url = URLDecoder.decode(it.uri.toString(), "UTF-8")
+            Log.e("FilePath", "Path:${url ?: ""}")
             runOnUiThread {
-                synchronized(this@NetworkActivity) {
-                    if (mIsEnd) {
-                        mSvMgr.mServers.clear()
-                    }
 
-                    val server = ServerMod(Iterables.getLast(URLDecoder.decode(it.uri.toString(), "UTF-8").split('/')), it.uri.toString(), mUri = it.uri)
-                    mSvMgr.add(server)
-                    mAdapter?.updateServers()
+                if (mIsEnd) {
+                    mSvMgr.clear()
+                }
+                synchronized(this@NetworkActivity) {
                     mIsEnd = false
                 }
+
+                val server =
+                    ServerMod(
+                        Iterables.getLast(url.split('/')),
+                        url,
+                        mUri = it.uri,
+                        mIsRoot = if (mStack.empty()) true else false,
+                        mType = media.type
+                    )
+                mSvMgr.add(server)
+
+                if (mStack.empty()) {
+                    mAdapter?.updateServers()
+                }
+
+                media.release()
             }
         }
     }
@@ -88,8 +112,6 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
 
         }
         mBrowser?.discoverNetworkShares()
-//        val uri = Uri.Builder().appendPath("smb://OSK666-PC").build()
-//        mBrowser?.browse(uri, MediaBrowser.Flag.Interact)
     }
 
     private fun openServerDialog(server: ServerMod) {
@@ -108,6 +130,7 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
 //                openServerDialog(server)
                 synchronized(this@NetworkActivity) {
                     mIsEnd = true
+                    mStack.push(server)
                 }
                 openPath(server)
             }
@@ -115,9 +138,18 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
         recyclerView?.adapter = mAdapter
     }
     fun openPath(server: ServerMod) {
-        mBrowser?.browse(server.mUri, MediaBrowser.Flag.Interact)
+        if (server.mType == Media.Type.Directory) {
+            mBrowser?.browse(server.mUri, MediaBrowser.Flag.Interact)
 
-
+        } else if (server.mType == Media.Type.File && Helper.isCorrectExt(server.mUri)) {
+            val music = MusicMod.loadUri(server.mUri, true)
+            music?.let {
+                PlayerListManager.instance.mMusic = it
+                Intent(this, MusicPlayerActivity::class.java).also {
+                    startActivity(it)
+                }
+            }
+        }
     }
 
     fun updateList() {
@@ -163,7 +195,7 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
     }
 
     /**
-     * If server is not null, it it edit dialog.
+     * If server is not null, it is edit dialog.
      * If server is null, it is add dialog.
      */
     fun getServerDialog(server: ServerMod?) {
@@ -186,6 +218,20 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
             }
             updateList()
         })
+    }
+
+    override fun onBackPressed() {
+        if (mStack.empty()) {
+            super.onBackPressed()
+        } else {
+            mStack.pop()
+            if (mStack.isEmpty()) {
+                mBrowser?.discoverNetworkShares()
+            } else {
+                openPath(mStack.peek())
+            }
+
+        }
     }
 
     private fun add() {

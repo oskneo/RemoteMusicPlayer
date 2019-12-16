@@ -8,22 +8,26 @@
 	<ImageView
 			android:id="@+id/img_thumbnail"
 			android:layout_width="match_parent"
-			android:layout_height="400dp"
+			android:background="@color/colorAccent"
+			android:layout_height="match_parent"
+			android:layout_above="@+id/music_control"
 			/>
 	
 	<androidx.constraintlayout.widget.ConstraintLayout
+			android:id="@+id/music_control"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
+			android:layout_height="wrap_content"
 			android:padding="@dimen/margin_mid"
-			android:layout_below="@+id/img_thumbnail">
+			android:layout_alignParentBottom="true">
 			
 		<ImageView
 				android:id="@+id/btn_menu"
 				android:layout_width="@dimen/icon_size"
 				android:layout_height="@dimen/icon_size"
 				android:src="@drawable/ic_menu"
+				android:layout_marginBottom="@dimen/margin_large"
+				app:layout_constraintBottom_toTopOf="@+id/music_title"
 				app:layout_constraintEnd_toEndOf="parent"
-				app:layout_constraintTop_toTopOf="parent"
 				/>
 		
 		<ImageView
@@ -33,7 +37,8 @@
 				android:src="@drawable/ic_star"
 				android:layout_marginEnd="@dimen/margin_xlarge"
 				app:layout_constraintEnd_toStartOf="@+id/btn_menu"
-				app:layout_constraintTop_toTopOf="parent"
+				android:layout_marginBottom="@dimen/margin_large"
+				app:layout_constraintBottom_toTopOf="@+id/music_title"
 				/>
 		
 		<ImageView
@@ -43,54 +48,55 @@
 				android:src="@drawable/ic_add"
 				android:layout_marginEnd="@dimen/margin_xlarge"
 				app:layout_constraintEnd_toStartOf="@+id/btn_collect"
-				app:layout_constraintTop_toTopOf="parent"
+				android:layout_marginBottom="@dimen/margin_large"
+				app:layout_constraintBottom_toTopOf="@+id/music_title"
 				/>
 		
 		<TextView
 				android:id="@+id/music_title"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:textSize="@dimen/text_size_large"
-				android:layout_marginTop="@dimen/margin_mid"
+				android:textSize="@dimen/text_size_mid"
+				android:layout_marginBottom="@dimen/margin_mid"
 				android:maxLines="1"
 				android:marqueeRepeatLimit="marquee_forever"
-				app:layout_constraintTop_toBottomOf="@+id/btn_add"
+				app:layout_constraintBottom_toTopOf="@+id/music_artist"
 				app:layout_constraintStart_toStartOf="parent"
 				app:layout_constraintEnd_toEndOf="parent"
-				tools:text="Title"
+				android:text="Title"
 				/>
 		
 		<TextView
 				android:id="@+id/music_artist"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:textSize="@dimen/text_size_mid"
-				android:layout_marginTop="@dimen/margin_mid"
-				app:layout_constraintTop_toBottomOf="@+id/music_title"
+				android:textSize="@dimen/text_size_small"
+				android:layout_marginBottom="@dimen/margin_mid"
+				app:layout_constraintBottom_toTopOf="@+id/music_album"
 				app:layout_constraintStart_toStartOf="parent"
 				app:layout_constraintEnd_toEndOf="parent"
-				tools:text="Kajiura"
+				android:text="Kajiura"
 				/>
 		
 		<TextView
 				android:id="@+id/music_album"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:textSize="@dimen/text_size_mid"
-				android:layout_marginTop="@dimen/margin_mid"
+				android:textSize="@dimen/text_size_small"
+				android:layout_marginBottom="@dimen/margin_mid"
 				android:marqueeRepeatLimit="marquee_forever"
 				android:maxLines="1"
-				app:layout_constraintTop_toBottomOf="@+id/music_artist"
+				app:layout_constraintBottom_toTopOf="@+id/seekbar_layout"
 				app:layout_constraintStart_toStartOf="parent"
 				app:layout_constraintEnd_toEndOf="parent"
-				tools:text="Fiction"
+				android:text="Fiction"
 				/>
 		
 		<RelativeLayout
 				android:id="@+id/seekbar_layout"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				app:layout_constraintTop_toBottomOf="@+id/music_album"
+				android:layout_marginBottom="@dimen/margin_xxlarge"
 				app:layout_constraintBottom_toTopOf="@+id/btn_play">
 			
 			<SeekBar
