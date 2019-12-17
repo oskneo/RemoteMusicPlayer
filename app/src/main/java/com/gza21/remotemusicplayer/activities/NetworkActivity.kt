@@ -116,6 +116,8 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
                 getServerDialog(server, true)
             }
         }
+        mAdapter?.updateServers()
+
     }
 
 
@@ -239,7 +241,7 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
         setEditedContent(dialogView, R.id.server_name, server?.mName, R.string.server_name, isLogin)
         setEditedContent(dialogView, R.id.server_address, server?.mAddress, R.string.server_address, isLogin)
         setEditedContent(dialogView, R.id.server_username, server?.mUserName, R.string.username)
-        setEditedContent(dialogView, R.id.server_pass, server?.mPassword, R.string.password)
+        setEditedContent(dialogView, R.id.server_pass, if (isLogin && server?.mIsStored != true) "" else server?.mPassword, R.string.password)
         mAlertDialog = Helper.getAlertDialog(this, mAlertDialog, dialogView, R.string.ok, {
 
             var address = getEditedContent(dialogView, R.id.server_address)

@@ -1,5 +1,6 @@
 package com.gza21.remotemusicplayer.managers
 
+import com.gza21.remotemusicplayer.mods.ArrayListServerMod
 import com.gza21.remotemusicplayer.mods.ServerMod
 import com.gza21.remotemusicplayer.utils.AppConstants
 import com.gza21.remotemusicplayer.utils.Helper
@@ -50,8 +51,11 @@ class ServerManager {
 
     init {
         mSavedServers.clear()
-        val temp = Helper.getSharedPrefForObject(AppConstants.PREF_SERVERS, ServerMod::javaClass)
-        mSavedServers.addAll()
+        val temp = Helper.getSharedPrefForObject(AppConstants.PREF_SERVERS, ArrayListServerMod::class.java)
+        temp?.let {
+            mSavedServers.addAll(it.mData)
+            mServers.addAll(it.mData)
+        }
     }
 
     fun addSavedServer(server: ServerMod) {
@@ -59,7 +63,7 @@ class ServerManager {
             mSavedServers.remove(it)
         }
         mSavedServers.add(server)
-        Helper.setSharedPrefForObject(AppConstants.PREF_SERVERS, mSavedServers)
+        Helper.setSharedPrefForObject(AppConstants.PREF_SERVERS, ArrayListServerMod(mSavedServers))
         add(server)
     }
 

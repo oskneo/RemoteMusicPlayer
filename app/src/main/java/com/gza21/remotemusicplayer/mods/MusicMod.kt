@@ -1,16 +1,21 @@
 package com.gza21.remotemusicplayer.mods
 
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
 import com.gza21.remotemusicplayer.managers.LibVlcManager
 import com.gza21.remotemusicplayer.managers.MusicDBManager
+import com.gza21.remotemusicplayer.managers.TempDataManager
 import com.gza21.remotemusicplayer.utils.Helper
 import com.gza21.remotemusicplayer.utils.IndexInterface
 import com.hierynomus.smbj.share.File
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.net.URLDecoder
 import java.util.concurrent.Semaphore
 
 //import ealvatag.audio.AudioFileIO
@@ -112,7 +117,7 @@ data class MusicMod(
         private val semaphore = Semaphore(0)
         private var mPlayer: MediaPlayer? = null
         private var mUrl: String? = null
-        var locked = true
+
 
 
         fun loadUri(uri: Uri?, cacheArt: Boolean = false): MusicMod? {
@@ -120,32 +125,66 @@ data class MusicMod(
             if (Helper.isCorrectExt(uri)) {
                 val music = MusicMod()
                 val media = Media(LibVlcManager.instance.mLibVlc, uri)
+                var path = ""
                 if (cacheArt) {
 
 //                    media.setEventListener(CacheMediaListener)
-//                    mPlayer?.volume = 0
-                    val t = Thread {
+//                    var locked = true
+
+                    val t = Thread()
+                    t.run {
                         mPlayer = org.videolan.libvlc.MediaPlayer(media)
-                        mPlayer?.setEventListener {
-                            Log.e("Sema", "Sema")
-                        }
+                        mPlayer?.volume = 0
                         mPlayer?.play()
                     }
-                    t.start()
+
+//                    mPlayer?.setEventListener {
+//                        Log.e("Sema", "Sema")
+//                    }
+
                     Log.e("Sema", "Aquire")
 //                    semaphore.acquire()
-                    while (locked) {
-                        Thread.sleep(50)
+                    while (true) {
+                        Thread.sleep(10)
+                        if (media.isParsed == true) {
+                            break
+                        }
                     }
+//                    Helper.getBitmapFromPath(media.getMeta(Media.Meta.ArtworkURL))?.get()?.let {
+//                        if (it.width > TempDataManager.instance.width) {
+//                            val ratio = it.width.toFloat() / it.height
+//                            val height = TempDataManager.instance.width / ratio
+//                            Bitmap.createScaledBitmap(it, TempDataManager.instance.width, height.toInt(), false)
+//                        }
+//                    }
+                    val artPath = mPlayer?.media?.getMeta(Media.Meta.ArtworkURL)?.let {
+                        URLDecoder.decode(it, "UTF-8")
+                    }?.let {
+                        val file = java.io.File(it.substring(7))
+                        val hash = file.hashCode()
+//                        val stream = FileInputStream(file)
+
+
+
+                        path = LibVlcManager.instance.ART_DIR.get() + "$hash" + it.takeLast(4)
+//                        val os = FileOutputStream(path)
+//                        stream.copyTo(os, 1024)
+                        file.copyTo(java.io.File(path), true)
+                        file.delete()
+                        path = "file://" + path
+                    }
+
+
                     t.run {
+
+                        mPlayer?.stop()
                         mPlayer?.release()
                     }
-                    t.start()
 
                 } else {
                     media.parse(Media.Parse.ParseNetwork)
                 }
-                music.loadMusicMedia(media)
+                music.loadMusicMedia(media, path)
                 media.release()
                 return music
             } else {
@@ -161,7 +200,7 @@ data class MusicMod(
                 if (mPlayer?.media?.getMeta(Media.Meta.Title)?.endsWith(mUrl!!.takeLast(3)) == false) {
                     semaphore.release()
                     synchronized(this@Companion) {
-                        locked = false
+//                        locked = false
                     }
 
                 }
@@ -207,7 +246,8 @@ data class MusicMod(
 //        mDiskNo = tag.getValue(FieldKey.DISC_NO).or("")
     }
 
-    fun loadMusicMedia(music: Media) {
+    fun loadMusicMedia(music: Media, artPath: String = "") {
+
 
 
         mGenre =  music.getMeta(Media.Meta.Genre) ?: ""
@@ -220,7 +260,7 @@ data class MusicMod(
         mTrack = music.getMeta(Media.Meta.TrackNumber) ?: ""
         mDiskNo = music.getMeta(Media.Meta.DiscNumber) ?: ""
         mUri = music.uri
-        mArtPath = music.getMeta(Media.Meta.ArtworkURL) ?: ""
+        mArtPath = artPath
         mSize = music.stats?.readBytes?.toLong() ?: 0
 
         mDuration = music.duration ?: 0

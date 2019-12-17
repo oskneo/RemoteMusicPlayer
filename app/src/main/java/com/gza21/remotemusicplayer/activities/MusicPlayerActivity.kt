@@ -98,21 +98,22 @@ class MusicPlayerActivity : BaseActivity() {
                     mPlayer?.stop()
                     btn_play?.setImageDrawable(getDrawable(R.drawable.ic_play))
                 }
-                val artPath = mPlayer?.media?.getMeta(Media.Meta.ArtworkURL)?.let {
-                    URLDecoder.decode(it, "UTF-8")
-                }
-                if (artPath != null && artPath != mMusic?.mArtPath) {
-                    mMusic?.mArtPath = artPath
-                    if (artPath.startsWith("file")) {
-                        try {
-                            val stream = FileInputStream(artPath.substring(7))
-                            val bitmap = BitmapFactory.decodeStream(stream)
-                            img_thumbnail?.setImageBitmap(bitmap)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
+//                val artPath = mPlayer?.media?.getMeta(Media.Meta.ArtworkURL)?.let {
+//                    URLDecoder.decode(it, "UTF-8")
+//                }
+//                if (artPath != null && artPath != mMusic?.mArtPath) {
+//                    mMusic?.mArtPath = artPath
+//                    if (artPath.startsWith("file")) {
+//                        try {
+//                            val stream = FileInputStream(artPath.substring(7))
+//                            val bitmap = BitmapFactory.decodeStream(stream)
+//                            img_thumbnail?.setImageBitmap(bitmap)
+//                        } catch (e: Exception) {
+//                            e.printStackTrace()
+//                        }
+//                    }
+//                }
+
             }
         }
     }
@@ -129,6 +130,18 @@ class MusicPlayerActivity : BaseActivity() {
             music_title?.text = mMusic?.mTitle ?: ""
             music_artist?.text = mMusic?.mArtistNames?.get(0) ?: ""
             music_album?.text = mMusic?.mAlbumName ?: ""
+
+
+            if (mMusic?.mArtPath?.startsWith("file:") == true) {
+                try {
+                    val stream = FileInputStream(mMusic?.mArtPath!!.substring(7))
+                    val bitmap = BitmapFactory.decodeStream(stream)
+                    img_thumbnail?.setImageBitmap(bitmap)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
             try {
                 mPlayer = MediaPlayer(mLibMgr.mLibVlc)
                 val media = Media(mLibMgr.mLibVlc, it)

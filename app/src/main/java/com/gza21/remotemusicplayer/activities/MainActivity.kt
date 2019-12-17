@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -11,6 +12,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.gza21.remotemusicplayer.R
+import com.gza21.remotemusicplayer.managers.TempDataManager
 import kotlinx.android.synthetic.main.app_bar_main.*
 import org.videolan.libvlc.LibVLC
 import org.videolan.libvlc.Media
@@ -28,6 +30,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener { view ->
@@ -84,7 +88,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onStart() {
         super.onStart()
-        playDemo()
+        val view = findViewById<View>(R.id.drawer_layout)
+        view.postDelayed({
+            TempDataManager.instance.height = view.height
+            TempDataManager.instance.width = view.width
+        }, 100)
     }
 
     override fun onResume() {
