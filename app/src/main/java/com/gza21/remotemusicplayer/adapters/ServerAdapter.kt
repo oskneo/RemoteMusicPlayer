@@ -51,7 +51,7 @@ class ServerAdapter(val context: Context, val listener: ServerListener) : Recycl
             }
             holder.mAddress.text = server.mAddress
             holder.mName.text = server.mName
-            holder.mStatus.setText(if (server.mIsConnected) R.string.connected else R.string.not_connected)
+            holder.mStatus.setText(if (server.mIsStored) R.string.connected else R.string.not_connected)
         } else {
 
         }

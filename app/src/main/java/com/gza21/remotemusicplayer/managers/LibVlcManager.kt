@@ -26,22 +26,29 @@ class LibVlcManager {
     var mDialogCallbacks: Callbacks =
         object : Callbacks {
             override fun onDisplay(dialog: ErrorMessage) {
+                Log.e("Callbacks", "error")
             }
 
             override fun onDisplay(dialog: LoginDialog) {
-                dialog.postLogin("osk666neo", "666666", true)
+                Log.e("Callbacks", "login")
+                ServerManager.instance.showLoginDialog(dialog)
+//                dialog.postLogin("osk666neo", "666666", true)
             }
 
             override fun onDisplay(dialog: QuestionDialog) {
+                Log.e("Callbacks", "question")
             }
 
             override fun onDisplay(dialog: ProgressDialog) {
+                Log.e("Callbacks", "progress")
             }
 
             override fun onCanceled(dialog: Dialog) {
+                Log.e("Callbacks", "dialog")
             }
 
             override fun onProgressUpdate(dialog: ProgressDialog) {
+                Log.e("Callbacks", "update")
             }
         }
 

@@ -3,7 +3,6 @@ package com.gza21.remotemusicplayer.mods
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
-import org.videolan.libvlc.Media
 
 data class ServerMod(
     var mName: String? = null,
@@ -11,7 +10,7 @@ data class ServerMod(
     var mUserName: String? = null,
     var mPassword: String? = null,
     var mDomain: String = "",
-    var mIsConnected: Boolean = false,
+    var mIsStored: Boolean = false,
     var mDbPath: String? = null,
     var mUri: Uri? = null,
     var mIsRoot: Boolean = false, // Not to parcel
@@ -36,7 +35,7 @@ data class ServerMod(
         writeString(mUserName)
         writeString(mPassword)
         writeString(mDomain)
-        writeInt((if (mIsConnected) 1 else 0))
+        writeInt((if (mIsStored) 1 else 0))
         writeString(mDbPath)
         writeParcelable(mUri, 0)
     }

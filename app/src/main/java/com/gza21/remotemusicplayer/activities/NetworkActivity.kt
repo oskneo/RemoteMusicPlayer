@@ -1,7 +1,9 @@
 package com.gza21.remotemusicplayer.activities
 
 
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
@@ -10,6 +12,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -27,6 +30,7 @@ import com.gza21.remotemusicplayer.managers.ServerManager
 import com.gza21.remotemusicplayer.mods.MusicMod
 import com.gza21.remotemusicplayer.mods.ServerMod
 import com.gza21.remotemusicplayer.utils.Helper
+import kotlinx.android.synthetic.main.activity_add_remote_server.*
 import kotlinx.coroutines.sync.Mutex
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.util.MediaBrowser
@@ -44,6 +48,7 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
     var mIsEnd = true
     val mThread = Thread()
     val mStack: Stack<ServerMod> = Stack()
+    var mAddButton: MenuItem? = null
 
     override fun onBrowseEnd() {
         synchronized(this@NetworkActivity) {
@@ -51,6 +56,7 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
         }
         runOnUiThread {
             mAdapter?.updateServers()
+            updateLoading(false)
         }
     }
 
@@ -79,6 +85,7 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
 
                 if (mStack.empty()) {
                     mAdapter?.updateServers()
+                    updateLoading(false)
                 }
 
                 media.release()
@@ -102,16 +109,21 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
         Handler(handlerThread.looper)
     }
 
+    override fun onStart() {
+        super.onStart()
+        mSvMgr.mListener = object : ServerManager.LoginListener {
+            override fun showLoginDialog(server: ServerMod) {
+                getServerDialog(server, true)
+            }
+        }
+    }
 
 
     override fun onResume() {
         super.onResume()
         mBrowser = MediaBrowser(mLibMgr.mLibVlc, this, browserHandler)
-        mThread.run {
-            mLibMgr.setDialogCallback()
+        mLibMgr.setDialogCallback()
 
-        }
-        mBrowser?.discoverNetworkShares()
     }
 
     private fun openServerDialog(server: ServerMod) {
@@ -132,6 +144,7 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
                     mIsEnd = true
                     mStack.push(server)
                 }
+                mSvMgr.setTargetServer(server)
                 openPath(server)
             }
         })
@@ -140,6 +153,7 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
     fun openPath(server: ServerMod) {
         if (server.mType == Media.Type.Directory) {
             mBrowser?.browse(server.mUri, MediaBrowser.Flag.Interact)
+            mAddButton?.setVisible(false)
 
         } else if (server.mType == Media.Type.File && Helper.isCorrectExt(server.mUri)) {
             val music = MusicMod.loadUri(server.mUri, true)
@@ -166,15 +180,35 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.findItem(R.id.action_add)?.setTitle("Add")
+        mAddButton = menu?.findItem(R.id.action_add)
+        mAddButton?.setTitle("Add")
+        menu?.findItem(R.id.action_scan)?.setTitle("Scan")
         return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (item?.itemId ?: 0 == R.id.action_add) {
             add()
+        } else if (item?.itemId ?: 0 == R.id.action_scan) {
+            scan()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun scan() {
+        updateLoading(true)
+        if (mStack.empty()) {
+            mBrowser?.discoverNetworkShares()
+        } else {
+            //todo:scan the whole folder
+        }
+    }
+
+    private fun updateLoading(isLoading: Boolean) {
+        runOnUiThread {
+            loading_bar?.visibility = if (isLoading) View.VISIBLE else View.GONE
+            loading_bar?.isIndeterminate = if (isLoading) true else false
+        }
     }
 
     private fun getEditedContent(view: View?, @IdRes id: Int) : String {
@@ -182,10 +216,12 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
             findViewById<EditText>(R.id.edit_text)?.text?.toString() ?: ""
     }
 
-    private fun setEditedContent(view: View?, @IdRes id: Int, text: String? = null, @StringRes title: Int? = null) {
+    private fun setEditedContent(view: View?, @IdRes id: Int, text: String? = null, @StringRes title: Int? = null, readOnly: Boolean = false) {
         text?.let {
-            view?.findViewById<LinearLayout>(id)?.
-                findViewById<EditText>(R.id.edit_text)?.setText(it)
+            val text = view?.findViewById<LinearLayout>(id)?.
+                findViewById<EditText>(R.id.edit_text)
+            text?.setText(it)
+            if (readOnly) text?.isEnabled = false
         }
         title?.let {
             view?.findViewById<LinearLayout>(id)?.
@@ -198,25 +234,38 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
      * If server is not null, it is edit dialog.
      * If server is null, it is add dialog.
      */
-    fun getServerDialog(server: ServerMod?) {
+    fun getServerDialog(server: ServerMod?, isLogin: Boolean = false) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_server, null)
-        setEditedContent(dialogView, R.id.server_name, server?.mName, R.string.server_name)
-        setEditedContent(dialogView, R.id.server_address, server?.mAddress, R.string.server_address)
+        setEditedContent(dialogView, R.id.server_name, server?.mName, R.string.server_name, isLogin)
+        setEditedContent(dialogView, R.id.server_address, server?.mAddress, R.string.server_address, isLogin)
         setEditedContent(dialogView, R.id.server_username, server?.mUserName, R.string.username)
         setEditedContent(dialogView, R.id.server_pass, server?.mPassword, R.string.password)
         mAlertDialog = Helper.getAlertDialog(this, mAlertDialog, dialogView, R.string.ok, {
+
+            var address = getEditedContent(dialogView, R.id.server_address)
+            if (!address.startsWith("smb")) {
+                address = "smb://" + address
+            }
             val mServer = ServerMod(
                 getEditedContent(dialogView, R.id.server_name),
-                getEditedContent(dialogView, R.id.server_address),
+                address,
                 getEditedContent(dialogView, R.id.server_username),
-                getEditedContent(dialogView, R.id.server_pass)
+                getEditedContent(dialogView, R.id.server_pass),
+                mUri = Uri.parse(address),
+                mIsStored = dialogView?.findViewById<CheckBox>(R.id.store_check)?.isChecked ?: false,
+                mType = Media.Type.Directory
             )
-            server?.let {
-                mSvMgr.edit(server, mServer)
-            } ?: run {
-                mSvMgr.add(mServer)
+            if (isLogin) {
+                mSvMgr.login(mServer)
+            } else {
+                server?.let {
+                    mSvMgr.editSavedServer(server, mServer)
+                } ?: run {
+                    mSvMgr.addSavedServer(mServer)
+                }
+                updateList()
             }
-            updateList()
+
         })
     }
 
@@ -224,9 +273,14 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
         if (mStack.empty()) {
             super.onBackPressed()
         } else {
-            mStack.pop()
+            synchronized(this) {
+                mStack.pop()
+            }
+            mSvMgr.setTargetServer(null)
             if (mStack.isEmpty()) {
-                mBrowser?.discoverNetworkShares()
+                mSvMgr.clear()
+                mAdapter?.updateServers()
+                mAddButton?.setVisible(true)
             } else {
                 openPath(mStack.peek())
             }
