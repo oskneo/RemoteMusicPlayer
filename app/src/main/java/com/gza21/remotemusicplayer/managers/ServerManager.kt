@@ -95,13 +95,23 @@ class ServerManager {
         mServers.find { compareServers(it, server) }?.let {
             mServers.remove(it)
         }
-        mSavedServers.find { compareServers(it, server) }?.let {
-            mServers.add(it)
-        } ?: run {
+        if (server.mIsRoot) {
+            mSavedServers.find { compareServers(it, server) }?.let {
+                mServers.add(it)
+            } ?: run {
+                mServers.add(server)
+            }
+        } else {
             mServers.add(server)
         }
-
     }
+
+    @Synchronized
+    fun addDrectly(server: ServerMod) {
+        mServers.add(server)
+    }
+
+
 
     @Synchronized
     fun remove(server: ServerMod?) {

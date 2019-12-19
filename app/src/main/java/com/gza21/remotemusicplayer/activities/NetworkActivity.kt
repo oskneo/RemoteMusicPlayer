@@ -25,17 +25,21 @@ import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.adapters.ServerAdapter
 import com.gza21.remotemusicplayer.dialogs.ServerConnectDialogFragment
 import com.gza21.remotemusicplayer.managers.LibVlcManager
+import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.managers.PlayerListManager
 import com.gza21.remotemusicplayer.managers.ServerManager
+import com.gza21.remotemusicplayer.mods.DataBaseMod
 import com.gza21.remotemusicplayer.mods.MusicMod
 import com.gza21.remotemusicplayer.mods.ServerMod
 import com.gza21.remotemusicplayer.utils.Helper
 import kotlinx.android.synthetic.main.activity_add_remote_server.*
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.Semaphore
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.util.MediaBrowser
 import java.net.URLDecoder
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
@@ -49,14 +53,68 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
     val mThread = Thread()
     val mStack: Stack<ServerMod> = Stack()
     var mAddButton: MenuItem? = null
+    var mIsScan = false
+    var mIsLock = false
+
+    private fun scanToBuildLibrary() {
+
+        mIsScan = true
+        updateLoading(true)
+        val db = DataBaseMod(mStack.firstElement())
+        scanPaths(db)
+        MusicDBManager.instance.mDataBase = db
+        updateLoading(false)
+        openPath(mStack.peek())
+    }
+
+    @Synchronized
+    private fun scanPaths(db: DataBaseMod) {
+        val serverList: ArrayList<ServerMod> = arrayListOf()
+        serverList.addAll(mSvMgr.mServers)
+        mSvMgr.clear()
+        val tList = arrayListOf<Thread>()
+        for (server in serverList) {
+            val t = Thread {
+                scanPath(server, db)
+            }
+            t.start()
+            tList.add(t)
+        }
+        for (t in tList) {
+            t.join()
+        }
+    }
+
+    private fun scanPath(server: ServerMod, db: DataBaseMod) {
+        if (server.mType == Media.Type.Directory) {
+            mBrowser?.browse(server.mUri, MediaBrowser.Flag.Interact)
+            mIsLock = true
+            while (mIsLock) {
+                Thread.sleep(5)
+            }
+            scanPaths(db)
+        } else if (server.mType == Media.Type.File && Helper.isCorrectExt(server.mUri)) {
+            Log.e("Music", "Scanmusci")
+            MusicMod.loadUri(server.mUri, false)?.let {
+                synchronized(this) {
+                    db.addMusic(it)
+                    Log.e("Music", "Added")
+                }
+            }
+        }
+    }
 
     override fun onBrowseEnd() {
         synchronized(this@NetworkActivity) {
             mIsEnd = true
         }
         runOnUiThread {
-            mAdapter?.updateServers()
-            updateLoading(false)
+            if (!mIsScan) {
+                mAdapter?.updateServers()
+                updateLoading(false)
+            } else {
+                mIsLock = false
+            }
         }
     }
 
@@ -81,7 +139,12 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
                         mIsRoot = if (mStack.empty()) true else false,
                         mType = media.type
                     )
-                mSvMgr.add(server)
+                if (mIsScan) {
+                    mSvMgr.addDrectly(server)
+                } else {
+                    mSvMgr.add(server)
+                }
+
 
                 if (mStack.empty()) {
                     mAdapter?.updateServers()
@@ -202,9 +265,11 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
         if (mStack.empty()) {
             mBrowser?.discoverNetworkShares()
         } else {
-            //todo:scan the whole folder
+            scanToBuildLibrary()
         }
     }
+
+
 
     private fun updateLoading(isLoading: Boolean) {
         runOnUiThread {

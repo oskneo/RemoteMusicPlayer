@@ -127,23 +127,13 @@ data class MusicMod(
                 val media = Media(LibVlcManager.instance.mLibVlc, uri)
                 var path = ""
                 if (cacheArt) {
-
-//                    media.setEventListener(CacheMediaListener)
-//                    var locked = true
-
+                    Log.e("Music", "Scan2")
                     val t = Thread()
                     t.run {
                         mPlayer = org.videolan.libvlc.MediaPlayer(media)
                         mPlayer?.volume = 0
                         mPlayer?.play()
                     }
-
-//                    mPlayer?.setEventListener {
-//                        Log.e("Sema", "Sema")
-//                    }
-
-                    Log.e("Sema", "Aquire")
-//                    semaphore.acquire()
                     while (true) {
                         Thread.sleep(10)
                         if (media.isParsed == true) {
@@ -157,23 +147,19 @@ data class MusicMod(
 //                            Bitmap.createScaledBitmap(it, TempDataManager.instance.width, height.toInt(), false)
 //                        }
 //                    }
-                    val artPath = mPlayer?.media?.getMeta(Media.Meta.ArtworkURL)?.let {
+                    Log.e("Music", "Scan3")
+                    mPlayer?.media?.getMeta(Media.Meta.ArtworkURL)?.let {
                         URLDecoder.decode(it, "UTF-8")
                     }?.let {
                         val file = java.io.File(it.substring(7))
                         val hash = file.hashCode()
-//                        val stream = FileInputStream(file)
-
-
-
                         path = LibVlcManager.instance.ART_DIR.get() + "$hash" + it.takeLast(4)
-//                        val os = FileOutputStream(path)
-//                        stream.copyTo(os, 1024)
                         file.copyTo(java.io.File(path), true)
                         file.delete()
                         path = "file://" + path
                     }
 
+                    Log.e("Music", "Scan4")
 
                     t.run {
 
@@ -182,9 +168,13 @@ data class MusicMod(
                     }
 
                 } else {
+                    Log.e("Music", "Scan02")
                     media.parse(Media.Parse.ParseNetwork)
+                    Log.e("Music", "Scan03")
                 }
+                Log.e("Music", "Scan05")
                 music.loadMusicMedia(media, path)
+                Log.e("Music", "Scan06")
                 media.release()
                 return music
             } else {
@@ -249,7 +239,7 @@ data class MusicMod(
     fun loadMusicMedia(music: Media, artPath: String = "") {
 
 
-
+        Log.e("Music", "Scan07")
         mGenre =  music.getMeta(Media.Meta.Genre) ?: ""
         mTitle = music.getMeta(Media.Meta.Title) ?: ""
         mAlbumName = music.getMeta(Media.Meta.Album) ?: ""
@@ -262,6 +252,7 @@ data class MusicMod(
         mUri = music.uri
         mArtPath = artPath
         mSize = music.stats?.readBytes?.toLong() ?: 0
+        Log.e("Music", "Scan08")
 
         mDuration = music.duration ?: 0
         val track = music.getTrack(0) as? Media.AudioTrack
@@ -270,6 +261,7 @@ data class MusicMod(
             mCodec = track.codec
             mChannelNumber = track.channels
         }
+        Log.e("Music", "Scan09")
 
 
 
