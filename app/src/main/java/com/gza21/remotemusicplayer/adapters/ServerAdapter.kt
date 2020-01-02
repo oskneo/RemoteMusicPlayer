@@ -1,6 +1,7 @@
 package com.gza21.remotemusicplayer.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,7 +36,9 @@ class ServerAdapter(val context: Context, val listener: ServerListener) : Recycl
 
     fun updateServers() {
         mSources.clear()
-        mSources.addAll(mSvrMgr.mServers)
+        val list = mSvrMgr.getServers()
+        Log.e("FilePath", "number of file: ${list.size}")
+        mSources.addAll(list)
         notifyDataSetChanged()
     }
 

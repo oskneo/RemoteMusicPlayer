@@ -34,12 +34,13 @@ import com.gza21.remotemusicplayer.mods.ServerMod
 import com.gza21.remotemusicplayer.utils.Helper
 import kotlinx.android.synthetic.main.activity_add_remote_server.*
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.Semaphore
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.util.MediaBrowser
 import java.net.URLDecoder
 import java.util.*
+import java.util.concurrent.Semaphore
 import kotlin.collections.ArrayList
+import kotlin.system.measureTimeMillis
 
 
 class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
@@ -55,8 +56,10 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
     var mAddButton: MenuItem? = null
     var mIsScan = false
     var mIsLock = false
+    val semaphore = Semaphore(1)
 
     private fun scanToBuildLibrary() {
+
 
         mIsScan = true
         updateLoading(true)
@@ -72,17 +75,20 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
         val serverList: ArrayList<ServerMod> = arrayListOf()
         serverList.addAll(mSvMgr.mServers)
         mSvMgr.clear()
-        val tList = arrayListOf<Thread>()
         for (server in serverList) {
-            val t = Thread {
-                scanPath(server, db)
-            }
-            t.start()
-            tList.add(t)
+            scanPath(server, db)
         }
-        for (t in tList) {
-            t.join()
-        }
+//        val tList = arrayListOf<Thread>()
+//        for (server in serverList) {
+//            val t = Thread {
+//                scanPath(server, db)
+//            }
+//            t.start()
+//            tList.add(t)
+//        }
+//        for (t in tList) {
+//            t.join()
+//        }
     }
 
     private fun scanPath(server: ServerMod, db: DataBaseMod) {
@@ -104,26 +110,45 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
         }
     }
 
+    @Synchronized
     override fun onBrowseEnd() {
+
+
+//        val time = measureTimeMillis {
+//            val one = waitSome()
+//        }
+        Log.e("FilePath", "BrowseEnd:$mIsScan")
         synchronized(this@NetworkActivity) {
             mIsEnd = true
         }
         runOnUiThread {
+//            semaphore.acquire()
+//            Log.e("FilePath", "semaphore:${semaphore.}")
             if (!mIsScan) {
                 mAdapter?.updateServers()
                 updateLoading(false)
             } else {
                 mIsLock = false
             }
+//            semaphore.release()
         }
+
     }
 
+//    suspend fun waitSome(): Int {
+//        semaphore.acquire()
+//        return 1
+//    }
+
+    @Synchronized
     override fun onMediaAdded(index: Int, media: Media?) {
+
         media?.let {
             val url = URLDecoder.decode(it.uri.toString(), "UTF-8")
-            Log.e("FilePath", "Path:${url ?: ""}")
+
             runOnUiThread {
 
+//                semaphore.acquire()
                 if (mIsEnd) {
                     mSvMgr.clear()
                 }
@@ -150,8 +175,9 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
                     mAdapter?.updateServers()
                     updateLoading(false)
                 }
-
+                Log.e("FilePath", "Path:${url ?: ""}")
                 media.release()
+//                semaphore.release()
             }
         }
     }

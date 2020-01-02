@@ -8,7 +8,7 @@ import org.videolan.libvlc.Dialog
 
 class ServerManager {
 
-    var mServers: ArrayList<ServerMod> = arrayListOf()
+    @Volatile var mServers: ArrayList<ServerMod> = arrayListOf()
 
     var mSavedServers: ArrayList<ServerMod> = arrayListOf()
     var mTargetServer: ServerMod? = null
@@ -17,6 +17,11 @@ class ServerManager {
 
     companion object {
         val instance by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { ServerManager() }
+    }
+
+    @Synchronized
+    fun getServers(): List<ServerMod> {
+        return mServers.toList()
     }
 
     @Synchronized
@@ -92,10 +97,11 @@ class ServerManager {
 
     @Synchronized
     fun add(server: ServerMod) {
-        mServers.find { compareServers(it, server) }?.let {
-            mServers.remove(it)
-        }
+
         if (server.mIsRoot) {
+            mServers.find { compareServers(it, server) }?.let {
+                mServers.remove(it)
+            }
             mSavedServers.find { compareServers(it, server) }?.let {
                 mServers.add(it)
             } ?: run {
