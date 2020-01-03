@@ -11,6 +11,13 @@ data class DataBaseMod(
     var mPlaylists: ArrayList<PlaylistMod>,
     var mGenres: ArrayList<GenreMod>
 ) : Parcelable {
+    val mMusicsHashMap: HashMap<String, MusicMod> = hashMapOf()
+
+    init {
+        for (item in mMusics) {
+            mMusicsHashMap.put(item.mUri?.toString() ?: "", item)
+        }
+    }
 
     constructor(source: Parcel) : this(
         source.readParcelable<ServerMod>(ServerMod::class.java.classLoader),
