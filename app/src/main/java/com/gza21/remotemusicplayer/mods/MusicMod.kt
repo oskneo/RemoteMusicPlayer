@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
+import androidx.room.*
 import com.gza21.remotemusicplayer.managers.LibVlcManager
 import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.managers.TempDataManager
@@ -21,15 +22,25 @@ import java.util.concurrent.Semaphore
 //import ealvatag.audio.AudioFileIO
 //import ealvatag.tag.FieldKey
 //import ealvatag.tag.NullTag
-
+@Entity(tableName = "musics")
 data class MusicMod(
+    @PrimaryKey(autoGenerate = true)
+    var mId: Int = 0,
+    @ColumnInfo(name = "file_name")
     var mFileName: String? = null,
+    @ColumnInfo(name = "art_path")
     var mArtPath: String = "",
+    @ColumnInfo(name = "size")
     var mSize: Long? = null,
+    @ColumnInfo(name = "title")
     var mTitle: String = "",
+    @ColumnInfo(name = "codec")
     var mCodec: String? = null,
+    @ColumnInfo(name = "type")
     var mType: String? = null,
+    @ColumnInfo(name = "index_in_cache")
     var mIndexInCache: Int = -1,
+    @ColumnInfo(name = "album_name")
     var mAlbumName: String = "",
     var mAlbumIndex: Int = -1,
     var mArtistNames: ArrayList<String> = arrayListOf(),
@@ -38,16 +49,26 @@ data class MusicMod(
     var mGenre: String = "",
     var mGenreInduce: ArrayList<Int> = arrayListOf(),
     override var mIndex: Int = -1,
+    @ColumnInfo(name = "bitrate")
     var mBitrate: Int = 0,
+    @ColumnInfo(name = "channel_number")
     var mChannelNumber: Int = 0,
+    @ColumnInfo(name = "year")
     var mYear: String? = null,
+    @ColumnInfo(name = "track")
     var mTrack: String? = null,
+    @ColumnInfo(name = "disk_no")
     var mDiskNo: String? = null,
+    @ColumnInfo(name = "uri_path")
+    var mUriPath: String? = null,
+    @Ignore
     var mUri: Uri? = null,
+    @ColumnInfo(name = "duration")
     var mDuration: Long = 0L
 
 ) : Parcelable, IndexInterface<MusicMod> {
     constructor(source: Parcel) : this(
+        source.readInt(),
         source.readString(),
         source.readString(),
         source.readValue(Long::class.java.classLoader) as Long?,
@@ -68,6 +89,7 @@ data class MusicMod(
         source.readString(),
         source.readString(),
         source.readString(),
+        source.readString(),
         source.readParcelable(Uri::class.java.classLoader),
         source.readLong()
     )
@@ -83,6 +105,7 @@ data class MusicMod(
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
+        writeInt(mId)
         writeString(mFileName)
         writeString(mArtPath)
         writeValue(mSize)
@@ -103,6 +126,7 @@ data class MusicMod(
         writeString(mYear)
         writeString(mTrack)
         writeString(mDiskNo)
+        writeString(mUriPath)
         writeParcelable(mUri, 0)
         writeLong(mDuration)
     }

@@ -101,11 +101,16 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
             scanPaths(db)
         } else if (server.mType == Media.Type.File && Helper.isCorrectExt(server.mUri)) {
             Log.e("Music", "Scanmusci")
-            MusicMod.loadUri(server.mUri, false)?.let {
-                synchronized(this) {
-                    db.addMusic(it)
-                    Log.e("Music", "Added")
-                }
+//            parseMusic(server, db)
+            
+        }
+    }
+
+    private fun parseMusic(server: ServerMod, db: DataBaseMod) {
+        MusicMod.loadUri(server.mUri, false)?.let {
+            synchronized(this) {
+                db.addMusic(it)
+                Log.e("Music", "Added")
             }
         }
     }

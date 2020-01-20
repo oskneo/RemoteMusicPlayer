@@ -11,6 +11,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 data class AlbumMod(
+
     var mName: String = "",
     var mArtist: ArrayList<Int> = arrayListOf(),
     var mMusics: ArrayList<Int> = arrayListOf(),
