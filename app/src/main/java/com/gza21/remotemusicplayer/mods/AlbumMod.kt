@@ -3,6 +3,10 @@ package com.gza21.remotemusicplayer.mods
 import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.utils.IndexInterface
 import java.lang.ref.WeakReference
@@ -10,13 +14,23 @@ import java.text.Collator
 import java.util.*
 import kotlin.collections.ArrayList
 
+@Entity(tableName = "albums")
 data class AlbumMod(
 
+
+    @ColumnInfo(name = "name")
     var mName: String = "",
+    @Ignore
     var mArtist: ArrayList<Int> = arrayListOf(),
+    @Ignore
     var mMusics: ArrayList<Int> = arrayListOf(),
+    @Ignore
     override var mIndex: Int = -1,
-    var mPhotoPath: String? = null
+    @ColumnInfo(name = "photo_path")
+    var mPhotoPath: String? = null,
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0
+
 ) : Parcelable, IndexInterface<AlbumMod> {
 
     var mPhotoIndexInCache: WeakReference<Bitmap>? = null

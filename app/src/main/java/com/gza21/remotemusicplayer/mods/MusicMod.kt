@@ -31,7 +31,7 @@ data class MusicMod(
     @ColumnInfo(name = "art_path")
     var mArtPath: String = "",
     @ColumnInfo(name = "size")
-    var mSize: Long? = null,
+    var mSize: Long = 0L,
     @ColumnInfo(name = "title")
     var mTitle: String = "",
     @ColumnInfo(name = "codec")
@@ -42,12 +42,19 @@ data class MusicMod(
     var mIndexInCache: Int = -1,
     @ColumnInfo(name = "album_name")
     var mAlbumName: String = "",
+    @Ignore
     var mAlbumIndex: Int = -1,
+    @Ignore
     var mArtistNames: ArrayList<String> = arrayListOf(),
+    @Ignore
     var mArtistInduces: ArrayList<Int> = arrayListOf(),
+    @Ignore
     var mPlaylists: ArrayList<Int> = arrayListOf(),
+    @Ignore
     var mGenre: String = "",
+    @Ignore
     var mGenreInduce: ArrayList<Int> = arrayListOf(),
+    @Ignore
     override var mIndex: Int = -1,
     @ColumnInfo(name = "bitrate")
     var mBitrate: Int = 0,
@@ -64,14 +71,23 @@ data class MusicMod(
     @Ignore
     var mUri: Uri? = null,
     @ColumnInfo(name = "duration")
-    var mDuration: Long = 0L
+    var mDuration: Long = 0L,
+    @ForeignKey(entity = AlbumMod::class, parentColumns = arrayOf("id"), childColumns = arrayOf("album_id"))
+    @ColumnInfo(name = "album_id")
+    var mAlbumId: Int = 0,
+    @ForeignKey(entity = ArtistMod::class, parentColumns = ["id"], childColumns = ["artist_id"])
+    @ColumnInfo(name = "artist_id")
+    var mArtistId: Int = 0,
+    @ForeignKey(entity = GenreMod::class, parentColumns = ["id"], childColumns = ["genre_id"])
+    @ColumnInfo(name = "genre_id")
+    var mGenreId: Int = 0
 
 ) : Parcelable, IndexInterface<MusicMod> {
     constructor(source: Parcel) : this(
         source.readInt(),
         source.readString(),
         source.readString(),
-        source.readValue(Long::class.java.classLoader) as Long?,
+        source.readValue(Long::class.java.classLoader) as Long,
         source.readString(),
         source.readString(),
         source.readString(),

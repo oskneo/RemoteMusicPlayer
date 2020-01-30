@@ -3,17 +3,31 @@ package com.gza21.remotemusicplayer.mods
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Ignore
 
+@Entity(tableName = "servers")
 data class ServerMod(
+    @ColumnInfo(name = "name")
     var mName: String? = null,
+    @ColumnInfo(name = "address")
     var mAddress: String = "",
+    @ColumnInfo(name = "username")
     var mUserName: String? = null,
+    @ColumnInfo(name = "password")
     var mPassword: String? = null,
+    @Ignore
     var mDomain: String = "",
+    @Ignore
     var mIsStored: Boolean = false,
+    @Ignore
     var mDbPath: String? = null,
+    @Ignore
     var mUri: Uri? = null,
+    @Ignore
     var mIsRoot: Boolean = false, // Not to parcel
+    @Ignore
     var mType: Int? = null // Not to parcel
 ) : Parcelable {
     constructor(source: Parcel) : this(

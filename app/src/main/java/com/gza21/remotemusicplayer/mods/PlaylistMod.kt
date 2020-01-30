@@ -3,15 +3,27 @@ package com.gza21.remotemusicplayer.mods
 import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.utils.IndexInterface
 
+@Entity(tableName = "playlists")
 data class PlaylistMod(
+    @ColumnInfo(name = "name")
     var mName: String = "",
+    @Ignore
     var mPhoto: Bitmap? = null,
+    @Ignore
     var mMusics: ArrayList<Int> = arrayListOf(),
+    @Ignore
     var mAlbums: ArrayList<Int> = arrayListOf(),
-    override var mIndex: Int = -1
+    @Ignore
+    override var mIndex: Int = -1,
+    @PrimaryKey(autoGenerate = true)
+    var mId: Int = 0
 ) : Parcelable, IndexInterface<PlaylistMod> {
     constructor(source: Parcel) : this(
         source.readString(),

@@ -24,11 +24,11 @@ class MyList<E: IndexInterface<E>>() : ArrayList<E>() {
         return induces
     }
 
-    fun test() {
-        val ls = MyList<AlbumMod>(arrayListOf<AlbumMod>(), arrayListOf())
-        ls[1] = AlbumMod("")
-
-    }
+//    fun test() {
+//        val ls = MyList<AlbumMod>(arrayListOf<AlbumMod>(), arrayListOf())
+//        ls[1] = AlbumMod("")
+//
+//    }
 
     fun setMIndex() {
         var i = 0
