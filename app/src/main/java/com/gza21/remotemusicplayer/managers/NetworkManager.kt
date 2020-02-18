@@ -189,7 +189,8 @@ class NetworkManager {
             s.add(SMB2ShareAccess.ALL.iterator().next())
             val f = mShare?.openFile(path + file.fileName, EnumSet.of(AccessMask.GENERIC_READ), null, s, null, null)
             val size = file.allocationSize
-            val music = MusicMod(file.fileName)
+            val music = MusicMod()
+            music.mFileName = file.fileName
             f?.let {
                 music.loadMusicFile(it, path + file.fileName, size.toInt())
                 database.addMusic(music)

@@ -2,6 +2,8 @@ package com.gza21.remotemusicplayer.mods
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.gza21.remotemusicplayer.utils.AppDatabase
+import com.gza21.remotemusicplayer.utils.MusicDao
 
 data class DataBaseMod(
     var mServer: ServerMod?,
@@ -54,6 +56,18 @@ data class DataBaseMod(
             override fun createFromParcel(source: Parcel): DataBaseMod = DataBaseMod(source)
             override fun newArray(size: Int): Array<DataBaseMod?> = arrayOfNulls(size)
         }
+        private var mMusicDao: MusicDao? = null
+    }
+
+    private fun initDao() {
+        if (mMusicDao == null) {
+            mMusicDao = AppDatabase.invoke().musicDao()
+        }
+    }
+
+    fun addMusicToDb(music: MusicMod) {
+        initDao()
+        mMusicDao?.insertAll(music)
     }
 
     fun addMusic(music: MusicMod) {
