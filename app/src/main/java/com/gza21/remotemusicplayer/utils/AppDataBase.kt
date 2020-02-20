@@ -4,6 +4,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.gza21.remotemusicplayer.BaseApp
+import com.gza21.remotemusicplayer.Dao.AlbumDao
+import com.gza21.remotemusicplayer.Dao.MusicDao
 import com.gza21.remotemusicplayer.mods.*
 
 @Database(
@@ -21,6 +23,7 @@ import com.gza21.remotemusicplayer.mods.*
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun musicDao(): MusicDao
+    abstract fun albumDao(): AlbumDao
 
     companion object {
         @Volatile private var instance: AppDatabase? = null

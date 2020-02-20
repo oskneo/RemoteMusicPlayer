@@ -29,7 +29,7 @@ data class AlbumMod(
     @ColumnInfo(name = "photo_path")
     var mPhotoPath: String? = null,
     @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
+    var mId: Int = 0
 
 ) : Parcelable, IndexInterface<AlbumMod> {
 
