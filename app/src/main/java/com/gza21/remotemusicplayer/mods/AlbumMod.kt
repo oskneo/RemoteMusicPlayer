@@ -3,10 +3,7 @@ package com.gza21.remotemusicplayer.mods
 import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Ignore
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.utils.IndexInterface
 import java.lang.ref.WeakReference
@@ -29,7 +26,10 @@ data class AlbumMod(
     @ColumnInfo(name = "photo_path")
     var mPhotoPath: String? = null,
     @PrimaryKey(autoGenerate = true)
-    var mId: Int = 0
+    var mId: Int = 0,
+    @ForeignKey(entity = ServerMod::class, parentColumns = ["id"], childColumns = ["server_id"])
+    @ColumnInfo(name = "server_id")
+    var mServerId: Int = 0
 
 ) : Parcelable, IndexInterface<AlbumMod> {
 

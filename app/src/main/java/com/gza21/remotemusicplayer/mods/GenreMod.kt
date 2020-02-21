@@ -2,10 +2,7 @@ package com.gza21.remotemusicplayer.mods
 
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Ignore
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.utils.IndexInterface
 
@@ -20,7 +17,10 @@ data class GenreMod(
     @Ignore
     override var mIndex: Int = -1,
     @PrimaryKey(autoGenerate = true)
-    var mId: Int = 1
+    var mId: Int = 1,
+    @ForeignKey(entity = ServerMod::class, parentColumns = ["id"], childColumns = ["server_id"])
+    @ColumnInfo(name = "server_id")
+    var mServerId: Int = 0
 ) : Parcelable, IndexInterface<GenreMod> {
     constructor(source: Parcel) : this(
         source.readString(),

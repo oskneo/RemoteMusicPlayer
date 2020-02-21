@@ -80,7 +80,10 @@ data class MusicMod(
     var mArtistId: Int = 0,
     @ForeignKey(entity = GenreMod::class, parentColumns = ["id"], childColumns = ["genre_id"])
     @ColumnInfo(name = "genre_id")
-    var mGenreId: Int = 0
+    var mGenreId: Int = 0,
+    @ForeignKey(entity = ServerMod::class, parentColumns = ["id"], childColumns = ["server_id"])
+    @ColumnInfo(name = "server_id")
+    var mServerId: Int = 0
 
 ) : Parcelable, IndexInterface<MusicMod> {
     constructor(source: Parcel) : this(
