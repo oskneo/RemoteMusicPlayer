@@ -4,8 +4,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.gza21.remotemusicplayer.BaseApp
-import com.gza21.remotemusicplayer.Dao.AlbumDao
-import com.gza21.remotemusicplayer.Dao.MusicDao
+import com.gza21.remotemusicplayer.dao.AlbumDao
+import com.gza21.remotemusicplayer.dao.MusicDao
 import com.gza21.remotemusicplayer.mods.*
 
 @Database(

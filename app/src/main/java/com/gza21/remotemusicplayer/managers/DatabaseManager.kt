@@ -1,8 +1,7 @@
 package com.gza21.remotemusicplayer.managers
 
-import com.gza21.remotemusicplayer.Dao.AlbumDao
-import com.gza21.remotemusicplayer.Dao.MusicDao
-import com.gza21.remotemusicplayer.mods.DataBaseMod
+import com.gza21.remotemusicplayer.dao.AlbumDao
+import com.gza21.remotemusicplayer.dao.MusicDao
 import com.gza21.remotemusicplayer.mods.MusicMod
 import com.gza21.remotemusicplayer.utils.AppDatabase
 

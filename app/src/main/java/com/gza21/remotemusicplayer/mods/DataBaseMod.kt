@@ -2,9 +2,9 @@ package com.gza21.remotemusicplayer.mods
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.gza21.remotemusicplayer.Dao.AlbumDao
+import com.gza21.remotemusicplayer.dao.AlbumDao
 import com.gza21.remotemusicplayer.utils.AppDatabase
-import com.gza21.remotemusicplayer.Dao.MusicDao
+import com.gza21.remotemusicplayer.dao.MusicDao
 
 data class DataBaseMod(
     var mServer: ServerMod?,
