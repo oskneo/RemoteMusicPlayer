@@ -8,7 +8,7 @@ interface MusicDao {
     @Query("SELECT * FROM musics")
     fun getAll(): List<MusicMod>
 
-    @Query("SELECT * FROM musics WHERE mId IN (:musicIds)")
+    @Query("SELECT * FROM musics WHERE musicId IN (:musicIds)")
     fun loadAllByIds(musicIds: IntArray): List<MusicMod>
 
 //    @Query("SELECT * FROM user WHERE first_name LIKE :first AND last_name LIKE :last LIMIT 1")

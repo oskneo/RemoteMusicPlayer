@@ -8,7 +8,7 @@ interface PlaylistDao {
     @Query("SELECT * FROM playlists")
     fun getAll(): List<PlaylistMod>
 
-    @Query("SELECT * FROM playlists WHERE mId IN (:playlistIds)")
+    @Query("SELECT * FROM playlists WHERE playlistId IN (:playlistIds)")
     fun loadAllByIds(playlistIds: IntArray): List<PlaylistMod>
 
 //    @Query("SELECT * FROM user WHERE first_name LIKE :first AND last_name LIKE :last LIMIT 1")

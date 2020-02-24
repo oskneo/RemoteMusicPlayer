@@ -20,7 +20,7 @@ data class PlaylistMod(
     @Ignore
     override var mIndex: Int = -1,
     @PrimaryKey(autoGenerate = true)
-    var mId: Int = 0,
+    var playlistId: Int = 0,
     @ForeignKey(entity = ServerMod::class, parentColumns = ["id"], childColumns = ["server_id"])
     @ColumnInfo(name = "server_id")
     var mServerId: Int = 0

@@ -1,6 +1,5 @@
 package com.gza21.remotemusicplayer.mods
 
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
@@ -8,14 +7,11 @@ import android.util.Log
 import androidx.room.*
 import com.gza21.remotemusicplayer.managers.LibVlcManager
 import com.gza21.remotemusicplayer.managers.MusicDBManager
-import com.gza21.remotemusicplayer.managers.TempDataManager
 import com.gza21.remotemusicplayer.utils.Helper
 import com.gza21.remotemusicplayer.utils.IndexInterface
 import com.hierynomus.smbj.share.File
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.net.URLDecoder
 import java.util.concurrent.Semaphore
 
@@ -25,7 +21,7 @@ import java.util.concurrent.Semaphore
 @Entity(tableName = "musics")
 data class MusicMod(
     @PrimaryKey(autoGenerate = true)
-    var mId: Int = 0,
+    var musicId: Int = 0,
     @ColumnInfo(name = "file_name")
     var mFileName: String? = null,
     @ColumnInfo(name = "art_path")
@@ -124,7 +120,7 @@ data class MusicMod(
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        writeInt(mId)
+        writeInt(musicId)
         writeString(mFileName)
         writeString(mArtPath)
         writeValue(mSize)

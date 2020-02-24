@@ -6,6 +6,7 @@ import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
+import androidx.room.PrimaryKey
 
 @Entity(tableName = "servers")
 data class ServerMod(
@@ -28,7 +29,9 @@ data class ServerMod(
     @Ignore
     var mIsRoot: Boolean = false, // Not to parcel
     @Ignore
-    var mType: Int? = null // Not to parcel
+    var mType: Int? = null, // Not to parcel
+    @PrimaryKey(autoGenerate = true)
+    var mId: Int = 0
 ) : Parcelable {
     constructor(source: Parcel) : this(
         source.readString(),
