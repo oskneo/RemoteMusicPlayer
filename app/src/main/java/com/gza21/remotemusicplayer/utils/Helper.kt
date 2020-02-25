@@ -4,16 +4,12 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Environment
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import com.google.gson.Gson
 import com.gza21.remotemusicplayer.BaseApp
-import com.gza21.remotemusicplayer.mods.ArrayListServerMod
-import kotlinx.android.synthetic.main.activity_music_player.*
-import org.videolan.BuildConfig
-import java.io.File
+import com.gza21.remotemusicplayer.entities.ArrayListServerMod
 import java.io.FileInputStream
 import java.lang.Exception
 import java.lang.ref.WeakReference

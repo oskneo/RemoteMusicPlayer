@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 import com.gza21.remotemusicplayer.BaseApp
 import com.gza21.remotemusicplayer.dao.AlbumDao
 import com.gza21.remotemusicplayer.dao.MusicDao
-import com.gza21.remotemusicplayer.mods.*
+import com.gza21.remotemusicplayer.entities.*
 
 @Database(
     entities = arrayOf(

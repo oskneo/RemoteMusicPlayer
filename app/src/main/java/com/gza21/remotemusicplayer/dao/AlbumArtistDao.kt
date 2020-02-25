@@ -1,7 +1,7 @@
 package com.gza21.remotemusicplayer.dao
 
 import androidx.room.*
-import com.gza21.remotemusicplayer.mods.AlbumArtist
+import com.gza21.remotemusicplayer.entities.AlbumArtist
 
 @Dao
 interface AlbumArtistDao {

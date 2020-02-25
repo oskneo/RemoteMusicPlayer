@@ -1,7 +1,6 @@
 package com.gza21.remotemusicplayer.dialogs
 
 import android.os.Bundle
-import android.os.Parcel
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,7 @@ import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.activities.NetworkActivity
 import com.gza21.remotemusicplayer.managers.NetworkManager
 import com.gza21.remotemusicplayer.managers.ServerManager
-import com.gza21.remotemusicplayer.mods.ServerMod
+import com.gza21.remotemusicplayer.entities.ServerMod
 import com.hierynomus.msdtyp.AccessMask
 import com.hierynomus.mssmb2.SMB2CreateDisposition
 import com.hierynomus.mssmb2.SMB2ShareAccess
@@ -21,7 +20,6 @@ import com.hierynomus.smbj.auth.AuthenticationContext
 import com.hierynomus.smbj.share.DiskShare
 import java.io.BufferedOutputStream
 import java.io.FileOutputStream
-import java.io.Serializable
 import java.util.*
 import java.util.concurrent.TimeUnit
 

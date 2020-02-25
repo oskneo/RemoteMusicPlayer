@@ -9,9 +9,7 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.adapters.MusicAdapter
-import com.gza21.remotemusicplayer.adapters.ServerAdapter
-import com.gza21.remotemusicplayer.mods.MusicMod
-import com.gza21.remotemusicplayer.mods.ServerMod
+import com.gza21.remotemusicplayer.entities.MusicMod
 
 class RemoteMusicActivity : BaseActivity() {
 

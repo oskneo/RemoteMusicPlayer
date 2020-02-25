@@ -8,8 +8,6 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.managers.FolderManager
-import com.gza21.remotemusicplayer.managers.ServerManager
-import com.gza21.remotemusicplayer.mods.ServerMod
 
 class FolderAdapter(val context: Context, val listener: FolderListener) : BaseAdapter() {
 

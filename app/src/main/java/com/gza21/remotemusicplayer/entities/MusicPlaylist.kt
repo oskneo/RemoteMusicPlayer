@@ -1,10 +1,7 @@
-package com.gza21.remotemusicplayer.mods
+package com.gza21.remotemusicplayer.entities
 
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
 
 @Entity(/*tableName = "music_playlists", */primaryKeys = ["playlistId", "musicId"])
 data class MusicPlaylist(

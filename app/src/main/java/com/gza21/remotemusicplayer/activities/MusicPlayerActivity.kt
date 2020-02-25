@@ -6,16 +6,13 @@ import android.widget.SeekBar
 import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.managers.LibVlcManager
 import com.gza21.remotemusicplayer.managers.PlayerListManager
-import com.gza21.remotemusicplayer.mods.MusicMod
+import com.gza21.remotemusicplayer.entities.MusicMod
 import com.gza21.remotemusicplayer.utils.Helper
 import kotlinx.android.synthetic.main.activity_music_player.*
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
-import java.io.ByteArrayInputStream
 import java.io.FileInputStream
-import java.io.InputStream
 import java.lang.Exception
-import java.net.URLDecoder
 
 class MusicPlayerActivity : BaseActivity() {
 

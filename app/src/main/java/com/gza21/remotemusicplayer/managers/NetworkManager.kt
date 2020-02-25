@@ -1,8 +1,8 @@
 package com.gza21.remotemusicplayer.managers
 
-import com.gza21.remotemusicplayer.mods.DataBaseMod
-import com.gza21.remotemusicplayer.mods.MusicMod
-import com.gza21.remotemusicplayer.mods.ServerMod
+import com.gza21.remotemusicplayer.entities.DataBaseMod
+import com.gza21.remotemusicplayer.entities.MusicMod
+import com.gza21.remotemusicplayer.entities.ServerMod
 import com.hierynomus.msdtyp.AccessMask
 import com.hierynomus.msfscc.FileAttributes
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation

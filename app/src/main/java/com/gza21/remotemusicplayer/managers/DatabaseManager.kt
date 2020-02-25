@@ -2,7 +2,8 @@ package com.gza21.remotemusicplayer.managers
 
 import com.gza21.remotemusicplayer.dao.AlbumDao
 import com.gza21.remotemusicplayer.dao.MusicDao
-import com.gza21.remotemusicplayer.mods.MusicMod
+import com.gza21.remotemusicplayer.entities.AlbumMod
+import com.gza21.remotemusicplayer.entities.MusicMod
 import com.gza21.remotemusicplayer.utils.AppDatabase
 
 class DatabaseManager {
@@ -25,4 +26,22 @@ class DatabaseManager {
         initDao()
         mMusicDao?.insertAll(music)
     }
+
+    fun getMusicByAlbum(albumId: Int, callback: (List<MusicMod>) -> Unit) {
+        Thread {
+            callback(mMusicDao?.loadAllByAlbumId(albumId) ?: listOf())
+        }.start()
+
+    }
+    fun getAlbum(albumId: Int, callback: (AlbumMod?) -> Unit) {
+        Thread {
+            val list = mAlbumDao?.loadAllByIds(IntArray(1).also { it[0] = albumId })
+            if (list != null && list.isNotEmpty()) {
+                callback(list[0])
+            }
+            callback(null)
+        }.start()
+    }
+
+
 }

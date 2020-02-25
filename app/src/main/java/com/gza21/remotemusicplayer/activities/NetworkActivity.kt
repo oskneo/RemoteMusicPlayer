@@ -1,7 +1,6 @@
 package com.gza21.remotemusicplayer.activities
 
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -28,9 +27,9 @@ import com.gza21.remotemusicplayer.managers.LibVlcManager
 import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.managers.PlayerListManager
 import com.gza21.remotemusicplayer.managers.ServerManager
-import com.gza21.remotemusicplayer.mods.DataBaseMod
-import com.gza21.remotemusicplayer.mods.MusicMod
-import com.gza21.remotemusicplayer.mods.ServerMod
+import com.gza21.remotemusicplayer.entities.DataBaseMod
+import com.gza21.remotemusicplayer.entities.MusicMod
+import com.gza21.remotemusicplayer.entities.ServerMod
 import com.gza21.remotemusicplayer.utils.Helper
 import kotlinx.android.synthetic.main.activity_add_remote_server.*
 import kotlinx.coroutines.sync.Mutex
@@ -40,7 +39,6 @@ import java.net.URLDecoder
 import java.util.*
 import java.util.concurrent.Semaphore
 import kotlin.collections.ArrayList
-import kotlin.system.measureTimeMillis
 
 
 class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {

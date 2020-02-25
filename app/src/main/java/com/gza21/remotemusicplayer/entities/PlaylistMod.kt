@@ -1,4 +1,4 @@
-package com.gza21.remotemusicplayer.mods
+package com.gza21.remotemusicplayer.entities
 
 import android.graphics.Bitmap
 import android.os.Parcel
@@ -7,30 +7,33 @@ import androidx.room.*
 import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.utils.IndexInterface
 
-@Entity(tableName = "artists")
-data class ArtistMod(
+@Entity(tableName = "playlists")
+data class PlaylistMod(
     @ColumnInfo(name = "name")
     var mName: String = "",
     @Ignore
-    var mAlbums: ArrayList<Int> = arrayListOf(),
+    var mPhoto: Bitmap? = null,
     @Ignore
     var mMusics: ArrayList<Int> = arrayListOf(),
     @Ignore
+    var mAlbums: ArrayList<Int> = arrayListOf(),
+    @Ignore
     override var mIndex: Int = -1,
     @PrimaryKey(autoGenerate = true)
-    var mId: Int = 0,
+    var playlistId: Int = 0,
     @ForeignKey(entity = ServerMod::class, parentColumns = ["id"], childColumns = ["server_id"])
     @ColumnInfo(name = "server_id")
     var mServerId: Int = 0
-) : Parcelable, IndexInterface<ArtistMod> {
+) : Parcelable, IndexInterface<PlaylistMod> {
     constructor(source: Parcel) : this(
         source.readString(),
+        source.readParcelable<Bitmap>(Bitmap::class.java.classLoader),
         ArrayList<Int>().apply { source.readList(this, Int::class.java.classLoader) },
         ArrayList<Int>().apply { source.readList(this, Int::class.java.classLoader) },
         source.readInt()
     )
 
-    override fun compareTo(other: ArtistMod): Int {
+    override fun compareTo(other: PlaylistMod): Int {
         return MusicDBManager.instance.compare(this.mName, other.mName)
     }
 
@@ -38,16 +41,17 @@ data class ArtistMod(
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeString(mName)
-        writeList(mAlbums)
+        writeParcelable(mPhoto, 0)
         writeList(mMusics)
+        writeList(mAlbums)
         writeInt(mIndex)
     }
 
     companion object {
         @JvmField
-        val CREATOR: Parcelable.Creator<ArtistMod> = object : Parcelable.Creator<ArtistMod> {
-            override fun createFromParcel(source: Parcel): ArtistMod = ArtistMod(source)
-            override fun newArray(size: Int): Array<ArtistMod?> = arrayOfNulls(size)
+        val CREATOR: Parcelable.Creator<PlaylistMod> = object : Parcelable.Creator<PlaylistMod> {
+            override fun createFromParcel(source: Parcel): PlaylistMod = PlaylistMod(source)
+            override fun newArray(size: Int): Array<PlaylistMod?> = arrayOfNulls(size)
         }
     }
 }

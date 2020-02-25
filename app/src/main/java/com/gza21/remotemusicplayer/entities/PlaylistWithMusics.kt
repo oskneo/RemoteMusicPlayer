@@ -1,4 +1,4 @@
-package com.gza21.remotemusicplayer.mods
+package com.gza21.remotemusicplayer.entities
 
 import androidx.room.Embedded
 import androidx.room.Junction

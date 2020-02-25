@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.managers.ServerManager
-import com.gza21.remotemusicplayer.mods.ServerMod
+import com.gza21.remotemusicplayer.entities.ServerMod
 
 
 class ServerAdapter(val context: Context, val listener: ServerListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

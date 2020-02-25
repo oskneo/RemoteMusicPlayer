@@ -1,7 +1,7 @@
 package com.gza21.remotemusicplayer.managers
 
-import com.gza21.remotemusicplayer.mods.ArrayListServerMod
-import com.gza21.remotemusicplayer.mods.ServerMod
+import com.gza21.remotemusicplayer.entities.ArrayListServerMod
+import com.gza21.remotemusicplayer.entities.ServerMod
 import com.gza21.remotemusicplayer.utils.AppConstants
 import com.gza21.remotemusicplayer.utils.Helper
 import org.videolan.libvlc.Dialog

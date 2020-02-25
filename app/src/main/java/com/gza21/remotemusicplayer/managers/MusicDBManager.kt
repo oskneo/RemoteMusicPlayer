@@ -1,11 +1,9 @@
 package com.gza21.remotemusicplayer.managers
 
 import android.os.Parcel
-import com.gza21.remotemusicplayer.mods.*
+import com.gza21.remotemusicplayer.entities.*
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.OutputStream
 import java.text.Collator
 import java.util.*
 import kotlin.collections.ArrayList

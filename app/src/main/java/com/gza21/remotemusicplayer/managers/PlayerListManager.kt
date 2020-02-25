@@ -1,8 +1,7 @@
 package com.gza21.remotemusicplayer.managers
 
-import android.provider.MediaStore
-import com.gza21.remotemusicplayer.mods.MusicMod
-import com.gza21.remotemusicplayer.mods.PlaylistMod
+import com.gza21.remotemusicplayer.entities.MusicMod
+import com.gza21.remotemusicplayer.entities.PlaylistMod
 import org.videolan.libvlc.Media
 
 class PlayerListManager {

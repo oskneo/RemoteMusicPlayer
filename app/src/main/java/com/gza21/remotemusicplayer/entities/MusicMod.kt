@@ -1,10 +1,11 @@
-package com.gza21.remotemusicplayer.mods
+package com.gza21.remotemusicplayer.entities
 
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
 import androidx.room.*
+import com.gza21.remotemusicplayer.managers.DatabaseManager
 import com.gza21.remotemusicplayer.managers.LibVlcManager
 import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.utils.Helper
@@ -304,5 +305,15 @@ data class MusicMod(
 
 
 
+    }
+
+    fun getAlbum(callback: (AlbumMod?) -> Unit) {
+        var album: AlbumMod? = null
+        DatabaseManager.instance.getAlbum(mAlbumId, {
+            album = it
+            album?.getMusicList {
+                callback(album)
+            }
+        })
     }
 }

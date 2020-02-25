@@ -8,11 +8,8 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import com.gza21.remotemusicplayer.R
-import com.gza21.remotemusicplayer.managers.FolderManager
 import com.gza21.remotemusicplayer.managers.MusicDBManager
-import com.gza21.remotemusicplayer.managers.ServerManager
-import com.gza21.remotemusicplayer.mods.MusicMod
-import com.gza21.remotemusicplayer.mods.ServerMod
+import com.gza21.remotemusicplayer.entities.MusicMod
 import java.lang.StringBuilder
 
 class MusicAdapter(val context: Context, val listener: MusicListener) : BaseAdapter() {
