@@ -3,7 +3,7 @@ package com.gza21.remotemusicplayer.entities
 
 import androidx.room.Entity
 
-@Entity(/*tableName = "music_playlists", */primaryKeys = ["playlistId", "musicId"])
+@Entity(tableName = "music_playlists", primaryKeys = ["playlistId", "musicId"])
 data class MusicPlaylist(
 //    @PrimaryKey(autoGenerate = true)
 //    var mId: Int = 0,
