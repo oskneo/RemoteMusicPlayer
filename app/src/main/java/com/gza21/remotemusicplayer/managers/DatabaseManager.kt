@@ -104,4 +104,19 @@ class DatabaseManager {
             }
         }.start()
     }
+
+    fun getArtistAlbums(artistId: Int, callback: (List<AlbumMod>) -> Unit) {
+        Thread {
+            val artistAlbumList = mAlbumArtistDao
+                ?.loadAllByArtistId(artistId) ?: listOf()
+
+            if (artistAlbumList.isNotEmpty()) {
+                val list = artistAlbumList.map {
+                    it.mAlbumId
+                }.toIntArray()
+                val albumList = mAlbumDao?.loadAllByIds(list) ?: listOf()
+                callback(albumList)
+            }
+        }.start()
+    }
 }

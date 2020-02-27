@@ -8,7 +8,7 @@ interface MusicPlaylistDao {
     @Query("SELECT * FROM music_playlists")
     fun getAll(): List<MusicPlaylist>
 
-    @Query("SELECT * FROM music_playlists WHERE musicId IN (:playlistId)")
+    @Query("SELECT * FROM music_playlists WHERE musicId = :playlistId")
     fun loadAllByPlaylistId(playlistId: Int): List<MusicPlaylist>
 
 //    @Query("SELECT * FROM user WHERE first_name LIKE :first AND last_name LIKE :last LIMIT 1")
