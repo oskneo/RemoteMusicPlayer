@@ -70,6 +70,20 @@ class DatabaseManager {
         }.start()
     }
 
+    fun updateGenre(genre: GenreMod): GenreMod? {
+        val id = mGenreDao?.insert(genre)
+        if (id == null || id < 0L) {
+            val rs = mGenreDao?.loadByName(genre.mName)
+            if (rs?.isNotEmpty() == true) {
+                return (rs[0])
+            }
+            return null
+        } else {
+            genre.mId = id.toInt()
+            return genre
+        }
+    }
+
     fun getPlaylist(playlistId: Int, callback: (PlaylistMod?) -> Unit) {
         Thread {
             val list = mPlaylistDao?.loadAllByIds(IntArray(1).also { it[0] = playlistId })

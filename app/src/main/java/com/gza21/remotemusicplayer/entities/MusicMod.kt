@@ -5,6 +5,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
 import androidx.room.*
+import com.gza21.remotemusicplayer.activities.BaseActivity
 import com.gza21.remotemusicplayer.managers.DatabaseManager
 import com.gza21.remotemusicplayer.managers.LibVlcManager
 import com.gza21.remotemusicplayer.managers.MusicDBManager
@@ -157,10 +158,11 @@ data class MusicMod(
         private val semaphore = Semaphore(0)
         private var mPlayer: MediaPlayer? = null
         private var mUrl: String? = null
+        private val mDbMgr by lazy { DatabaseManager.instance }
 
 
 
-        fun loadUri(uri: Uri?, cacheArt: Boolean = false): MusicMod? {
+        fun loadUri(uri: Uri?, cacheArt: Boolean = false, serverId: Int, callback: (MusicMod) -> Unit, callbackError: () -> Unit, activity: BaseActivity) {
             mUrl = uri?.toString()
             if (Helper.isCorrectExt(uri)) {
                 val music = MusicMod()
@@ -213,12 +215,23 @@ data class MusicMod(
                     Log.e("Music", "Scan03")
                 }
                 Log.e("Music", "Scan05")
-                music.loadMusicMedia(media, path)
-                Log.e("Music", "Scan06")
-                media.release()
-                return music
+                Thread {
+                    Log.e("Music", "Scan06")
+                    if (music.loadMusicMediaToDb(media, path, serverId) == 1) {
+                        activity.runOnUiThread {
+                            callbackError()
+                        }
+                    } else {
+                        media.release()
+                        activity.runOnUiThread {
+                            callback(music)
+                        }
+                    }
+                }.start()
+
+
             } else {
-                return null
+                callbackError()
             }
         }
         val CachePlayerListener = object : org.videolan.libvlc.MediaPlayer.EventListener {
@@ -315,5 +328,42 @@ data class MusicMod(
                 callback(album)
             }
         })
+    }
+
+    fun loadMusicMediaToDb(music: Media, artPath: String = "", serverId: Int): Int {
+
+
+        Log.e("Music", "Scan07")
+        mServerId = serverId
+        mGenre =  music.getMeta(Media.Meta.Genre) ?: ""
+        val genre = mDbMgr.updateGenre(GenreMod(serverId, music.getMeta(Media.Meta.Genre)))
+        if (genre == null) {
+            return 1
+        }
+        mGenreId = genre.mId
+        mTitle = music.getMeta(Media.Meta.Title) ?: ""
+        mAlbumName = music.getMeta(Media.Meta.Album) ?: ""
+        music.getMeta(Media.Meta.Artist)?.let {
+            mArtistNames.add(it)
+        }
+        mYear = music.getMeta(Media.Meta.Date) ?: ""
+        mTrack = music.getMeta(Media.Meta.TrackNumber) ?: ""
+        mDiskNo = music.getMeta(Media.Meta.DiscNumber) ?: ""
+        mUri = music.uri
+        mArtPath = artPath
+        mSize = music.stats?.readBytes?.toLong() ?: 0
+        Log.e("Music", "Scan08")
+
+        mDuration = music.duration ?: 0
+        val track = music.getTrack(0) as? Media.AudioTrack
+        track?.let {
+            mBitrate = track.bitrate
+            mCodec = track.codec
+            mChannelNumber = track.channels
+        }
+        Log.e("Music", "Scan09")
+
+
+        return 0
     }
 }

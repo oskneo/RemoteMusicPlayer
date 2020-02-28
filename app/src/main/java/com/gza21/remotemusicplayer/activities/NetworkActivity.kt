@@ -105,7 +105,7 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
     }
 
     private fun parseMusic(server: ServerMod, db: DataBaseMod) {
-        MusicMod.loadUri(server.mUri, false)?.let {
+        MusicMod.loadUri(server.mUri, false, server.mId)?.let {
             synchronized(this) {
                 db.addMusic(it)
                 Log.e("Music", "Added")
@@ -250,7 +250,7 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
             mAddButton?.setVisible(false)
 
         } else if (server.mType == Media.Type.File && Helper.isCorrectExt(server.mUri)) {
-            val music = MusicMod.loadUri(server.mUri, true)
+            val music = MusicMod.loadUri(server.mUri, true, server.mId)
             music?.let {
                 PlayerListManager.instance.mMusic = it
                 Intent(this, MusicPlayerActivity::class.java).also {
