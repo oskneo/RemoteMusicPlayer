@@ -23,13 +23,10 @@ import com.google.common.collect.Iterables
 import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.adapters.ServerAdapter
 import com.gza21.remotemusicplayer.dialogs.ServerConnectDialogFragment
-import com.gza21.remotemusicplayer.managers.LibVlcManager
-import com.gza21.remotemusicplayer.managers.MusicDBManager
-import com.gza21.remotemusicplayer.managers.PlayerListManager
-import com.gza21.remotemusicplayer.managers.ServerManager
 import com.gza21.remotemusicplayer.entities.DataBaseMod
 import com.gza21.remotemusicplayer.entities.MusicMod
 import com.gza21.remotemusicplayer.entities.ServerMod
+import com.gza21.remotemusicplayer.managers.*
 import com.gza21.remotemusicplayer.utils.Helper
 import kotlinx.android.synthetic.main.activity_add_remote_server.*
 import kotlinx.coroutines.sync.Mutex
@@ -99,18 +96,19 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
             scanPaths(db)
         } else if (server.mType == Media.Type.File && Helper.isCorrectExt(server.mUri)) {
             Log.e("Music", "Scanmusci")
-//            parseMusic(server, db)
+            parseMusic(server, db)
             
         }
     }
 
-    private fun parseMusic(server: ServerMod, db: DataBaseMod) {
-        MusicMod.loadUri(server.mUri, false, server.mId)?.let {
+    private fun parseMusic(path: Uri, db: DataBaseMod, serverId: Int) {
+        MusicMod.loadUri(path, false, serverId, {
             synchronized(this) {
-                db.addMusic(it)
+                DatabaseManager.instance.addMusicToDb(it)
+//                db.addMusic(it)
                 Log.e("Music", "Added")
             }
-        }
+        }, {}, this)
     }
 
     @Synchronized

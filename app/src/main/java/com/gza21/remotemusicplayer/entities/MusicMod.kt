@@ -66,8 +66,6 @@ data class MusicMod(
     var mDiskNo: String? = null,
     @ColumnInfo(name = "uri_path")
     var mUriPath: String? = null,
-    @Ignore
-    var mUri: Uri? = null,
     @ColumnInfo(name = "duration")
     var mDuration: Long = 0L,
     @ForeignKey(entity = AlbumMod::class, parentColumns = arrayOf("id"), childColumns = arrayOf("album_id"))
@@ -107,7 +105,6 @@ data class MusicMod(
         source.readString(),
         source.readString(),
         source.readString(),
-        source.readParcelable(Uri::class.java.classLoader),
         source.readLong()
     )
 
@@ -144,7 +141,6 @@ data class MusicMod(
         writeString(mTrack)
         writeString(mDiskNo)
         writeString(mUriPath)
-        writeParcelable(mUri, 0)
         writeLong(mDuration)
     }
 
@@ -302,7 +298,7 @@ data class MusicMod(
         mYear = music.getMeta(Media.Meta.Date) ?: ""
         mTrack = music.getMeta(Media.Meta.TrackNumber) ?: ""
         mDiskNo = music.getMeta(Media.Meta.DiscNumber) ?: ""
-        mUri = music.uri
+        mUriPath = music.uri.toString()
         mArtPath = artPath
         mSize = music.stats?.readBytes?.toLong() ?: 0
         Log.e("Music", "Scan08")
@@ -334,22 +330,34 @@ data class MusicMod(
 
 
         Log.e("Music", "Scan07")
+        mTitle = music.getMeta(Media.Meta.Title) ?: ""
         mServerId = serverId
+
         mGenre =  music.getMeta(Media.Meta.Genre) ?: ""
         val genre = mDbMgr.updateGenre(GenreMod(serverId, music.getMeta(Media.Meta.Genre)))
         if (genre == null) {
             return 1
         }
         mGenreId = genre.mId
-        mTitle = music.getMeta(Media.Meta.Title) ?: ""
-        mAlbumName = music.getMeta(Media.Meta.Album) ?: ""
-        music.getMeta(Media.Meta.Artist)?.let {
-            mArtistNames.add(it)
+
+        val album = mDbMgr.updateAlbum(AlbumMod(serverId, music.getMeta(Media.Meta.Album)))
+        if (album == null) {
+            return 1
         }
+        mAlbumId = album.mId
+
+        val artist = mDbMgr.updateArtist(ArtistMod(serverId, music.getMeta(Media.Meta.Artist) ?: ""))
+        if (artist == null) {
+            return 1
+        }
+        mArtistId = artist.mId
+
+        val albumArtist = mDbMgr.updateAlbmuArtist(album, artist)
+
         mYear = music.getMeta(Media.Meta.Date) ?: ""
         mTrack = music.getMeta(Media.Meta.TrackNumber) ?: ""
         mDiskNo = music.getMeta(Media.Meta.DiscNumber) ?: ""
-        mUri = music.uri
+        mUriPath = music.uri.toString()
         mArtPath = artPath
         mSize = music.stats?.readBytes?.toLong() ?: 0
         Log.e("Music", "Scan08")

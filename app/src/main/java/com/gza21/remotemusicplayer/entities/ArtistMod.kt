@@ -6,7 +6,7 @@ import androidx.room.*
 import com.gza21.remotemusicplayer.managers.MusicDBManager
 import com.gza21.remotemusicplayer.utils.IndexInterface
 
-@Entity(tableName = "artists")
+@Entity(tableName = "artists", indices = arrayOf(Index(value = ["name"], unique = true)))
 data class ArtistMod(
     @ColumnInfo(name = "name")
     var mName: String = "",
@@ -28,6 +28,11 @@ data class ArtistMod(
         ArrayList<Int>().apply { source.readList(this, Int::class.java.classLoader) },
         source.readInt()
     )
+
+    constructor(serverId: Int, name: String?) : this() {
+        mServerId = serverId
+        mName = name ?: ""
+    }
 
     override fun compareTo(other: ArtistMod): Int {
         return MusicDBManager.instance.compare(this.mName, other.mName)

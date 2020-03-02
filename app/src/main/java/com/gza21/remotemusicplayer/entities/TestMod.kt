@@ -10,7 +10,7 @@ data class TestMod(
         hashMapOf<String, MusicMod>().also {
             source.createTypedArrayList(MusicMod.CREATOR)?.let { list ->
                 for (item in list) {
-                    it.put(item.mUri?.toString()!!, item)
+//                    it.put(item.mUri?.toString()!!, item)
                 }
             }
         }

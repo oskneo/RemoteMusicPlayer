@@ -123,7 +123,7 @@ class MusicPlayerActivity : BaseActivity() {
 
     private fun prepareMusic() {
 
-        mMusic?.mUri.let {
+        mMusic?.mUriPath?.let {
             music_title?.text = mMusic?.mTitle ?: ""
             music_artist?.text = mMusic?.mArtistNames?.get(0) ?: ""
             music_album?.text = mMusic?.mAlbumName ?: ""

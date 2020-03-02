@@ -1,5 +1,6 @@
 package com.gza21.remotemusicplayer.managers
 
+import android.database.sqlite.SQLiteConstraintException
 import com.gza21.remotemusicplayer.dao.*
 import com.gza21.remotemusicplayer.entities.*
 import com.gza21.remotemusicplayer.utils.AppDatabase
@@ -50,6 +51,20 @@ class DatabaseManager {
         }.start()
     }
 
+    fun updateAlbum(album: AlbumMod): AlbumMod? {
+        val id = mAlbumDao?.insert(album)
+        if (id == null || id < 0L) {
+            val rs = mAlbumDao?.loadByName(album.mName)
+            if (rs?.isNotEmpty() == true) {
+                return (rs[0])
+            }
+            return null
+        } else {
+            album.mId = id.toInt()
+            return album
+        }
+    }
+
     fun getArtist(artistId: Int, callback: (ArtistMod?) -> Unit) {
         Thread {
             val list = mArtistDao?.loadAllByIds(IntArray(1).also { it[0] = artistId })
@@ -58,6 +73,20 @@ class DatabaseManager {
             }
             callback(null)
         }.start()
+    }
+
+    fun updateArtist(artist: ArtistMod): ArtistMod? {
+        val id = mArtistDao?.insert(artist)
+        if (id == null || id < 0L) {
+            val rs = mArtistDao?.loadByName(artist.mName)
+            if (rs?.isNotEmpty() == true) {
+                return (rs[0])
+            }
+            return null
+        } else {
+            artist.mId = id.toInt()
+            return artist
+        }
     }
 
     fun getGenre(genreId: Int, callback: (GenreMod?) -> Unit) {
@@ -132,5 +161,20 @@ class DatabaseManager {
                 callback(albumList)
             }
         }.start()
+    }
+
+    fun updateAlbmuArtist(album: AlbumMod, artist: ArtistMod): AlbumArtist? {
+        val albumArtist = AlbumArtist()
+        albumArtist.mAlbumId = album.mId
+        albumArtist.mArtistId = artist.mId
+        return try {
+            mAlbumArtistDao?.insert(albumArtist)
+            albumArtist
+        } catch (e: SQLiteConstraintException) {
+            val rs = mAlbumArtistDao?.load(album.mId, artist.mId)
+            if (rs?.isNotEmpty() == true) {
+                rs[0]
+            } else null
+        }
     }
 }

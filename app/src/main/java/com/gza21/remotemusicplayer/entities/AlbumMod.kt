@@ -10,7 +10,7 @@ import com.gza21.remotemusicplayer.utils.IndexInterface
 import java.lang.ref.WeakReference
 import kotlin.collections.ArrayList
 
-@Entity(tableName = "albums")
+@Entity(tableName = "albums", indices = arrayOf(Index(value = ["name"], unique = true)))
 data class AlbumMod(
 
 
@@ -43,6 +43,11 @@ data class AlbumMod(
         source.readInt(),
         source.readString()
     )
+
+    constructor(serverId: Int, name: String?) : this() {
+        mServerId = serverId
+        mName = name ?: ""
+    }
 
     override fun describeContents() = 0
 

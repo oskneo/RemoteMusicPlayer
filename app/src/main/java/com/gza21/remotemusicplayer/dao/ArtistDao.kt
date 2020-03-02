@@ -14,6 +14,15 @@ interface ArtistDao {
 //    @Query("SELECT * FROM user WHERE first_name LIKE :first AND last_name LIKE :last LIMIT 1")
 //    fun findByName(first: String, last: String): MusicMod
 
+    @Query("SELECT * FROM artists WHERE name = :name")
+    fun loadByName(name: String): List<ArtistMod>
+
+//    @Query("SELECT * FROM user WHERE first_name LIKE :first AND last_name LIKE :last LIMIT 1")
+//    fun findByName(first: String, last: String): MusicMod
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insert(album: ArtistMod): Long
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg artists: ArtistMod)
 
