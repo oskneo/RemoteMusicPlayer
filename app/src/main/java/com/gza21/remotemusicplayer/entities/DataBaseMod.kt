@@ -18,7 +18,7 @@ data class DataBaseMod(
 
     init {
         for (item in mMusics) {
-            mMusicsHashMap.put(item.mUri?.toString() ?: "", item)
+            mMusicsHashMap.put(item.mUriPath ?: "", item)
         }
     }
 

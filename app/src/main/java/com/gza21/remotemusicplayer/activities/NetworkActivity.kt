@@ -101,14 +101,16 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
         }
     }
 
-    private fun parseMusic(path: Uri, db: DataBaseMod, serverId: Int) {
-        MusicMod.loadUri(path, false, serverId, {
-            synchronized(this) {
-                DatabaseManager.instance.addMusicToDb(it)
+    private fun parseMusic(server: ServerMod, db: DataBaseMod) {
+        db.mServer?.mId?.let {
+            MusicMod.loadUri(Uri.parse(server.mAddress), false, it, {
+                synchronized(this) {
+                    DatabaseManager.instance.addMusicToDb(it)
 //                db.addMusic(it)
-                Log.e("Music", "Added")
-            }
-        }, {}, this)
+                    Log.e("Music", "Added")
+                }
+            }, {}, this)
+        }
     }
 
     @Synchronized
@@ -248,13 +250,12 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
             mAddButton?.setVisible(false)
 
         } else if (server.mType == Media.Type.File && Helper.isCorrectExt(server.mUri)) {
-            val music = MusicMod.loadUri(server.mUri, true, server.mId)
-            music?.let {
+            val music = MusicMod.loadUri(server.mUri, true, server.mId, {
                 PlayerListManager.instance.mMusic = it
                 Intent(this, MusicPlayerActivity::class.java).also {
                     startActivity(it)
                 }
-            }
+            }, {}, this)
         }
     }
 
