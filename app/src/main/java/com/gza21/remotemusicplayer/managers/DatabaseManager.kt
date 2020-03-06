@@ -28,6 +28,9 @@ class DatabaseManager {
         if (mArtistDao == null) {
             mArtistDao = AppDatabase.invoke().artistDao()
         }
+        if (mServerDao == null) {
+            mServerDao = AppDatabase.invoke().serverDao()
+        }
     }
 
     fun addMusicToDb(music: MusicMod) {
@@ -175,6 +178,20 @@ class DatabaseManager {
             if (rs?.isNotEmpty() == true) {
                 rs[0]
             } else null
+        }
+    }
+
+    fun updateServer(server: ServerMod): ServerMod? {
+        val id = mServerDao?.insert(server)
+        if (id == null || id < 0L) {
+            val rs = mServerDao?.loadByAddress(server.mAddress)
+            if (rs?.isNotEmpty() == true) {
+                return (rs[0])
+            }
+            return null
+        } else {
+            server.mId = id.toInt()
+            return server
         }
     }
 }

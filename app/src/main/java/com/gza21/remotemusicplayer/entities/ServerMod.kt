@@ -31,8 +31,16 @@ data class ServerMod(
     @Ignore
     var mType: Int? = null, // Not to parcel
     @PrimaryKey(autoGenerate = true)
-    var mId: Int = 0
+    var mId: Int = 0,
+    @ColumnInfo(name = "initiated")
+    var mInitiated: Int = 0,
+    @ColumnInfo(name = "total_music")
+    var mTotalMusics: Int = 0,
+    @ColumnInfo(name = "scanned_music")
+    var mScannedlMusics: Int = 0
 ) : Parcelable {
+
+
     constructor(source: Parcel) : this(
         source.readString(),
         source.readString(),

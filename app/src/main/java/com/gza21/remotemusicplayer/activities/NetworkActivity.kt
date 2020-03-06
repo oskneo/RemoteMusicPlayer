@@ -27,6 +27,7 @@ import com.gza21.remotemusicplayer.entities.DataBaseMod
 import com.gza21.remotemusicplayer.entities.MusicMod
 import com.gza21.remotemusicplayer.entities.ServerMod
 import com.gza21.remotemusicplayer.managers.*
+import com.gza21.remotemusicplayer.utils.AppDatabase
 import com.gza21.remotemusicplayer.utils.Helper
 import kotlinx.android.synthetic.main.activity_add_remote_server.*
 import kotlinx.coroutines.sync.Mutex
@@ -84,6 +85,11 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
 //        for (t in tList) {
 //            t.join()
 //        }
+        db.mServer?.mTotalMusics = AppDatabase.invoke().musicDao().getRowCount()
+        db.mServer?.mInitiated = 1
+        db.mServer?.let {
+            DatabaseManager.instance.updateServer(it)
+        }
     }
 
     private fun scanPath(server: ServerMod, db: DataBaseMod) {
