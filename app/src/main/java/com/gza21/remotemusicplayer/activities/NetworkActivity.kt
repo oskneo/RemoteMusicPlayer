@@ -2,6 +2,8 @@ package com.gza21.remotemusicplayer.activities
 
 
 import android.content.Intent
+import android.media.MediaDataSource
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -27,6 +29,8 @@ import com.gza21.remotemusicplayer.entities.DataBaseMod
 import com.gza21.remotemusicplayer.entities.MusicMod
 import com.gza21.remotemusicplayer.entities.ServerMod
 import com.gza21.remotemusicplayer.managers.*
+import com.gza21.remotemusicplayer.utils.AppConstants
+import com.gza21.remotemusicplayer.utils.AppConstants.ScanMode
 import com.gza21.remotemusicplayer.utils.AppDatabase
 import com.gza21.remotemusicplayer.utils.Helper
 import kotlinx.android.synthetic.main.activity_add_remote_server.*
@@ -53,6 +57,8 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
     var mIsScan = false
     var mIsLock = false
     val semaphore = Semaphore(1)
+
+
 
     private fun scanToBuildLibrary() {
 
@@ -108,14 +114,28 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
     }
 
     private fun parseMusic(server: ServerMod, db: DataBaseMod) {
+
         db.mServer?.mId?.let {
-            MusicMod.loadUri(Uri.parse(server.mAddress), false, it, {
+            if (DatabaseManager.instance.mMode == ScanMode.FullScan) {
+                MusicMod.loadUri(Uri.parse(server.mAddress), false, it, {
+                    synchronized(this) {
+                        DatabaseManager.instance.addMusicToDb(it)
+//                db.addMusic(it)
+                        Log.e("Music", "Scanned")
+                    }
+                }, {}, this)
+            } else {
                 synchronized(this) {
-                    DatabaseManager.instance.addMusicToDb(it)
+                    val music = MusicMod()
+                    music.mUriPath = server.mAddress
+                    music.mTitle = server.mAddress.substringAfterLast('/', "")
+                    music.mServerId = db.mServer?.mId ?: 0
+                    DatabaseManager.instance.addMusicToDb(music)
 //                db.addMusic(it)
                     Log.e("Music", "Added")
                 }
-            }, {}, this)
+            }
+
         }
     }
 

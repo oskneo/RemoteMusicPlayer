@@ -25,6 +25,9 @@ interface MusicDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg musics: MusicMod)
 
+    @Update(onConflict = OnConflictStrategy.ABORT)
+    fun update(music: MusicMod)
+
     @Delete
     fun delete(music: MusicMod)
 }

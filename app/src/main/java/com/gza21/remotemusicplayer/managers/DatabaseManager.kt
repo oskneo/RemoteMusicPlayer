@@ -1,9 +1,12 @@
 package com.gza21.remotemusicplayer.managers
 
 import android.database.sqlite.SQLiteConstraintException
+import android.util.Log
 import com.gza21.remotemusicplayer.dao.*
 import com.gza21.remotemusicplayer.entities.*
+import com.gza21.remotemusicplayer.utils.AppConstants
 import com.gza21.remotemusicplayer.utils.AppDatabase
+import java.lang.Exception
 
 class DatabaseManager {
     companion object {
@@ -17,6 +20,7 @@ class DatabaseManager {
     private var mServerDao: ServerDao? = null
     private var mMusicPlaylistDao: MusicPlaylistDao? = null
     private var mAlbumArtistDao: AlbumArtistDao? = null
+    var mMode: AppConstants.ScanMode = AppConstants.ScanMode.PathScan
 
     private fun initDao() {
         if (mMusicDao == null) {
@@ -35,7 +39,17 @@ class DatabaseManager {
 
     fun addMusicToDb(music: MusicMod) {
         initDao()
-        mMusicDao?.insertAll(music)
+        if (mMode == AppConstants.ScanMode.FullScan) {
+            try {
+                mMusicDao?.update(music)
+            } catch (e: Exception) {
+                Log.e(this::class.java.simpleName, "Updating failed")
+            }
+
+        } else {
+            mMusicDao?.insertAll(music)
+        }
+
     }
 
     fun getMusicByAlbum(albumId: Int, callback: (List<MusicMod>) -> Unit) {

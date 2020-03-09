@@ -37,7 +37,9 @@ data class ServerMod(
     @ColumnInfo(name = "total_music")
     var mTotalMusics: Int = 0,
     @ColumnInfo(name = "scanned_music")
-    var mScannedlMusics: Int = 0
+    var mScannedlMusics: Int = 0,
+    @ColumnInfo(name = "hash")
+    var mHash: Int = 0
 ) : Parcelable {
 
 

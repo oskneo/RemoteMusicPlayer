@@ -1,6 +1,9 @@
 package com.gza21.remotemusicplayer.activities
 
 import android.content.Intent
+import android.media.MediaDataSource
+import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -51,6 +54,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         navView.setNavigationItemSelectedListener(this)
     }
 
+    override fun getLayoutView(): Int {
+        return super.getLayoutView()
+    }
+
     private fun playDemo() {
         try {
             val args = ArrayList<String>()
@@ -84,6 +91,16 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         }
 
+    }
+
+    private fun playSmbSampleDemo() {
+//        val test = MediaMetadataRetriever()
+//        test.setDataSource("")
+//        val source = MediaDataSource()
+//        test.embeddedPicture
+        val uri = Uri.parse("smb://osk666neo:666666@192.168.11.65/J/Music/STH/Duca - ISI.m4a")
+        val player = android.media.MediaPlayer.create(this, uri)
+        player
     }
 
     override fun onStart() {
