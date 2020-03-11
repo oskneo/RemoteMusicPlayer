@@ -34,8 +34,10 @@ data class AlbumMod(
 
 ) : Parcelable, IndexInterface<AlbumMod> {
 
+    @Ignore
     var mPhotoIndexInCache: WeakReference<Bitmap>? = null
 
+    @Ignore
     constructor(source: Parcel) : this(
         source.readString(),
         ArrayList<Int>().apply { source.readList(this, Int::class.java.classLoader) },
@@ -44,6 +46,7 @@ data class AlbumMod(
         source.readString()
     )
 
+    @Ignore
     constructor(serverId: Int, name: String?) : this() {
         mServerId = serverId
         mName = name ?: ""

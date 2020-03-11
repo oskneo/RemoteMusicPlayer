@@ -22,6 +22,7 @@ data class ArtistMod(
     @ColumnInfo(name = "server_id")
     var mServerId: Int = 0
 ) : Parcelable, IndexInterface<ArtistMod> {
+    @Ignore
     constructor(source: Parcel) : this(
         source.readString(),
         ArrayList<Int>().apply { source.readList(this, Int::class.java.classLoader) },
@@ -29,6 +30,7 @@ data class ArtistMod(
         source.readInt()
     )
 
+    @Ignore
     constructor(serverId: Int, name: String?) : this() {
         mServerId = serverId
         mName = name ?: ""

@@ -52,6 +52,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         toggle.syncState()
 
         navView.setNavigationItemSelectedListener(this)
+        playSmbSampleDemo()
     }
 
     override fun getLayoutView(): Int {
@@ -98,9 +99,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //        test.setDataSource("")
 //        val source = MediaDataSource()
 //        test.embeddedPicture
-        val uri = Uri.parse("smb://osk666neo:666666@192.168.11.65/J/Music/STH/Duca - ISI.m4a")
-        val player = android.media.MediaPlayer.create(this, uri)
-        player
+//        val uri = Uri.parse("smb://osk666neo:666666@192.168.11.65/J/Music/STH/Duca - ISI.m4a")
+//        val player = android.media.MediaPlayer.create(this, uri)
+        val player = android.media.MediaPlayer()
+        player.set
+        player.start()
     }
 
     override fun onStart() {

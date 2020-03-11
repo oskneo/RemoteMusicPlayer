@@ -11,6 +11,9 @@ interface ServerDao {
     @Query("SELECT * FROM servers WHERE address = :address")
     fun loadByAddress(address: String): List<ServerMod>
 
+    @Query("SELECT * FROM servers WHERE mId = :serverId")
+    fun loadById(serverId: Int): List<ServerMod>
+
 //    @Query("SELECT * FROM user WHERE first_name LIKE :first AND last_name LIKE :last LIMIT 1")
 //    fun findByName(first: String, last: String): MusicMod
 

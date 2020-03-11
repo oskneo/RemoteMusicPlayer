@@ -142,7 +142,7 @@ class DatabaseManager {
 
     fun getServer(serverId: Int, callback: (ServerMod?) -> Unit) {
         Thread {
-            val list = mServerDao?.loadAllByIds(IntArray(1).also { it[0] = serverId })
+            val list = mServerDao?.loadById(serverId)
             if (list != null && list.isNotEmpty()) {
                 callback(list[0])
             }

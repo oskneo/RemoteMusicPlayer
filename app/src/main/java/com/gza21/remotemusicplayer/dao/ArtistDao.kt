@@ -5,7 +5,7 @@ import com.gza21.remotemusicplayer.entities.ArtistMod
 
 @Dao
 interface ArtistDao {
-    @Query("SELECT * FROM albums")
+    @Query("SELECT * FROM artists")
     fun getAll(): List<ArtistMod>
 
     @Query("SELECT * FROM artists WHERE mId IN (:artistIds)")
