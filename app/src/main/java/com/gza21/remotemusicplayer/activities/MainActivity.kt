@@ -102,7 +102,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //        val uri = Uri.parse("smb://osk666neo:666666@192.168.11.65/J/Music/STH/Duca - ISI.m4a")
 //        val player = android.media.MediaPlayer.create(this, uri)
         val player = android.media.MediaPlayer()
-        player.set
+        player.setDataSource()
         player.start()
     }
 

@@ -1,8 +1,10 @@
 package com.gza21.remotemusicplayer.managers
 
+import android.util.Log
 import com.gza21.remotemusicplayer.entities.DataBaseMod
 import com.gza21.remotemusicplayer.entities.MusicMod
 import com.gza21.remotemusicplayer.entities.ServerMod
+import com.gza21.remotemusicplayer.utils.TextUtils
 import com.hierynomus.msdtyp.AccessMask
 import com.hierynomus.msfscc.FileAttributes
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation
@@ -14,6 +16,7 @@ import com.hierynomus.smbj.auth.AuthenticationContext
 import com.hierynomus.smbj.connection.Connection
 import com.hierynomus.smbj.session.Session
 import com.hierynomus.smbj.share.DiskShare
+import com.hierynomus.smbj.share.File
 import java.lang.Exception
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -27,11 +30,13 @@ class NetworkManager {
     }
     private var mSrcDir = ""
     private var mDstDir = ""
+    private val LOG_TAG = this::class.java.simpleName
 
     private val TransactTimeOut = 120L
     private val SocketTimeOut = 180L
-    private val mFdMgr = FolderManager.instance
-
+    private val mFdMgr by lazy {
+        FolderManager.instance
+    }
 
     private var mConfig: SmbConfig? = null
     private var mShare: DiskShare? = null
@@ -67,7 +72,7 @@ class NetworkManager {
     }
 
     fun connect() {
-        if (mServer == null) {
+        if (mServer == null || mIsConnected) {
             return
         }
         try {
@@ -84,7 +89,10 @@ class NetworkManager {
                 mSession = mConnection?.authenticate(mAc)
 
                 // 连接共享文件夹
+                val start = System.currentTimeMillis()
                 mShare = mSession?.connectShare(mSrcDir) as DiskShare
+                val end = System.currentTimeMillis()
+                Log.d(LOG_TAG, "share: ${end - start}")
                 synchronized(this@NetworkManager) {
                     mIsConnected = true
                     ServerManager.instance.setServerConnected(mServer)
@@ -130,8 +138,9 @@ class NetworkManager {
         }
     }
 
-    fun getCurrentFolderList(destDir: String = mDstDir,
-                             items: ArrayList<FileIdBothDirectoryInformation>? = getCurrentItems(destDir)
+    fun getCurrentFolderList(
+        destDir: String = mDstDir,
+        items: ArrayList<FileIdBothDirectoryInformation>? = getCurrentItems(destDir)
     ): ArrayList<String> {
         val folders = arrayListOf<String>()
         items?.let {
@@ -144,8 +153,9 @@ class NetworkManager {
         return folders
     }
 
-    fun getCurrentFileList(destDir: String = mDstDir,
-                           items: ArrayList<FileIdBothDirectoryInformation>? = getCurrentItems(destDir)
+    fun getCurrentFileList(
+        destDir: String = mDstDir,
+        items: ArrayList<FileIdBothDirectoryInformation>? = getCurrentItems(destDir)
     ): ArrayList<FileIdBothDirectoryInformation> {
         val files = arrayListOf<FileIdBothDirectoryInformation>()
         items?.let {
@@ -160,10 +170,21 @@ class NetworkManager {
 
     fun getCurrentItems(destDir: String = mDstDir): ArrayList<FileIdBothDirectoryInformation>? {
         val folders = arrayListOf<FileIdBothDirectoryInformation>()
+        val start = System.currentTimeMillis()
         mShare?.list(destDir)?.let {
+            val end = System.currentTimeMillis()
+            Log.d(LOG_TAG, "list: ${end - start}")
             folders.addAll(it)
             return folders
         } ?: run { return null }
+    }
+
+    fun openFile(path: String?): File? {
+        if (TextUtils.isNotEmpty(path)) {
+            val s = HashSet<SMB2ShareAccess>()
+            return mShare?.openFile(path, EnumSet.of(AccessMask.GENERIC_READ), null, s, null, null)
+        }
+        return null
     }
 
     fun resetParams() {
@@ -184,7 +205,6 @@ class NetworkManager {
         }
 
         for (file in getCurrentFileList(path, items)) {
-
             val s = HashSet<SMB2ShareAccess>()
             s.add(SMB2ShareAccess.ALL.iterator().next())
             val f = mShare?.openFile(path + file.fileName, EnumSet.of(AccessMask.GENERIC_READ), null, s, null, null)
