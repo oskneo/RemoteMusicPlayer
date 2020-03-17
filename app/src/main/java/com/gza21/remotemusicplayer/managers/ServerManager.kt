@@ -35,7 +35,6 @@ class ServerManager {
     }
 
     fun showLoginDialog(dialog: Dialog.LoginDialog) {
-
         mTargetServer?.let { target ->
             mSavedServers.find {
                 it.mAddress == target.mAddress && target.mIsStored
@@ -46,7 +45,6 @@ class ServerManager {
                 mListener?.showLoginDialog(target)
             }
         }
-
     }
 
     fun login(server: ServerMod) {
@@ -68,6 +66,7 @@ class ServerManager {
             mSavedServers.remove(it)
         }
         mSavedServers.add(server)
+        DatabaseManager.instance.updateServer(server)
         Helper.setSharedPrefForObject(AppConstants.PREF_SERVERS, ArrayListServerMod(mSavedServers))
         add(server)
     }

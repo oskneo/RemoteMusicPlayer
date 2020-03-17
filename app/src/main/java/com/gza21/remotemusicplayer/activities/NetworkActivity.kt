@@ -386,7 +386,6 @@ class NetworkActivity : BaseActivity(), MediaBrowser.EventListener {
                 }
                 updateList()
             }
-
         })
     }
 

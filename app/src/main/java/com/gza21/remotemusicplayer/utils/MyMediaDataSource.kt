@@ -2,6 +2,8 @@ package com.gza21.remotemusicplayer.utils
 
 import android.media.MediaDataSource
 import com.gza21.remotemusicplayer.managers.NetworkManager
+import java.io.IOException
+import java.lang.Exception
 
 class MyMediaDataSource(path: String) : MediaDataSource() {
 
@@ -29,14 +31,46 @@ class MyMediaDataSource(path: String) : MediaDataSource() {
             mNwMgr.connect()
             mNwMgr.openFile(mPath + mFileName)?.let { file ->
                 val input = file.inputStream
-                var remaining = size
-                input.skip(position)
+                var skipRemaining = position
                 while (true) {
-                    val haveRead = input.read(it, offset, size)
+                    try {
+                        val skipped = input.skip(position)
+                        if (skipped <= 0 && skipRemaining > 0) {
+                            return -1
+                        }
+                        skipRemaining -= skipped
+                        if (skipRemaining == 0L) {
+                            break
+                        } else if (skipRemaining < 0L) {
+                            return -1
+                        }
+                    } catch (e: Exception) {
+                        throw IOException("")
+                    }
                 }
 
+                var currentOffset = offset
+                var currentSize = size
+                while (true) {
+                    try {
+                        val haveRead = input.read(it, currentOffset, currentSize)
+                        if (haveRead <= 0 && currentSize > 0) {
+                            return size - currentSize
+                        }
+                        currentOffset += haveRead
+                        currentSize -= haveRead
+                        if (currentSize == 0) {
+                            return size
+                        } else if (currentSize < 0) {
+                            return -1
+                        }
+                    } catch (e: Exception) {
+                        throw IOException("")
+                    }
+                }
             }
         }
+        return -1
     }
 
     override fun close() {

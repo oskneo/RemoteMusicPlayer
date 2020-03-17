@@ -16,6 +16,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.gza21.remotemusicplayer.R
 import com.gza21.remotemusicplayer.managers.TempDataManager
+import com.gza21.remotemusicplayer.utils.MyMediaDataSource
 import kotlinx.android.synthetic.main.app_bar_main.*
 import org.videolan.libvlc.LibVLC
 import org.videolan.libvlc.Media
@@ -102,7 +103,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //        val uri = Uri.parse("smb://osk666neo:666666@192.168.11.65/J/Music/STH/Duca - ISI.m4a")
 //        val player = android.media.MediaPlayer.create(this, uri)
         val player = android.media.MediaPlayer()
-        player.setDataSource()
+        player.setDataSource(MyMediaDataSource(""))
         player.start()
     }
 
