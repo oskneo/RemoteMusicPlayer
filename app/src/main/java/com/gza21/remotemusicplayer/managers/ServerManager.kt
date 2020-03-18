@@ -5,12 +5,13 @@ import com.gza21.remotemusicplayer.entities.ServerMod
 import com.gza21.remotemusicplayer.utils.AppConstants
 import com.gza21.remotemusicplayer.utils.Helper
 import org.videolan.libvlc.Dialog
+import java.util.concurrent.CopyOnWriteArrayList
 
 class ServerManager {
 
-    @Volatile var mServers: ArrayList<ServerMod> = arrayListOf()
+    @Volatile var mServers: CopyOnWriteArrayList<ServerMod> = CopyOnWriteArrayList()
 
-    var mSavedServers: ArrayList<ServerMod> = arrayListOf()
+    var mSavedServers: CopyOnWriteArrayList<ServerMod> = CopyOnWriteArrayList()
     var mTargetServer: ServerMod? = null
     var mLoginDialog: Dialog.LoginDialog? = null
     var mListener: LoginListener? = null
@@ -54,11 +55,12 @@ class ServerManager {
 
     init {
         mSavedServers.clear()
-        val temp = Helper.getSharedPrefForObject(AppConstants.PREF_SERVERS, ArrayListServerMod::class.java)
-        temp?.let {
-            mSavedServers.addAll(it.mData)
-            mServers.addAll(it.mData)
+//        val temp = Helper.getSharedPrefForObject(AppConstants.PREF_SERVERS, ArrayListServerMod::class.java)
+        DatabaseManager.instance.getServers {
+            mSavedServers.addAll(it)
+            mServers.addAll(it)
         }
+
     }
 
     fun addSavedServer(server: ServerMod) {

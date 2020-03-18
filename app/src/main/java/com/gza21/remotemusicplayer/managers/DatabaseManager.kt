@@ -150,6 +150,15 @@ class DatabaseManager {
         }.start()
     }
 
+    fun getServers(callback: (List<ServerMod>) -> Unit) {
+        Thread {
+            val list = mServerDao?.getAll()
+            if (list != null && list.isNotEmpty()) {
+                callback(list)
+            }
+        }.start()
+    }
+
     fun getMusicPlaylist(playlistId: Int, callback: (List<MusicMod>) -> Unit) {
         Thread {
             val musicPlaylistList = mMusicPlaylistDao
